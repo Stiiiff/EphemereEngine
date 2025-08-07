@@ -1,0 +1,45 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+using UnrealBuildTool;
+using System.IO;
+
+public class ClothingSystemEditor : ModuleRules
+{
+	public ClothingSystemEditor(ReadOnlyTargetRules Target) : base(Target)
+	{
+        PublicIncludePathModuleNames.Add("UnrealEd");
+        PublicIncludePathModuleNames.Add("ClothingSystemRuntimeInterface");
+        PublicIncludePathModuleNames.Add("ClothingSystemEditorInterface");
+		PublicIncludePathModuleNames.Add("Persona");
+
+		PrivateDependencyModuleNames.AddRange(
+            new string[]
+            {
+                "Engine",
+                "RenderCore"
+            }
+        );
+
+        PublicDependencyModuleNames.AddRange(
+			new string[] { 
+				"Core",
+				"CoreUObject",
+				"ClothingSystemRuntimeInterface",
+                "ClothingSystemRuntimeCommon",
+                "ContentBrowser",
+                "UnrealEd",
+                "SlateCore",
+                "Slate",
+                "ClothingSystemEditorInterface"
+            }
+		);
+
+		PrivateIncludePathModuleNames.AddRange(
+            new string[] {
+                "Persona",
+            }
+        );
+
+        SetupModulePhysicsSupport(Target);
+	}
+}

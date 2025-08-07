@@ -1,0 +1,10 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+/*=============================================================================
+	VulkanCommon.ush: Common Vulkan shader code
+=============================================================================*/
+
+// Update this GUID to improve shader recompilation for Vulkan only shaders
+// GUID = CF7BEF8E-174D-4D6B-A16A-8137017B9A1F
+
+#pragma once

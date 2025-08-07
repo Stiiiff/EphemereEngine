@@ -1,0 +1,277 @@
+<?xml version='1.0' ?>
+<BuildGraph xmlns="http://www.epicgames.com/BuildGraph" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.epicgames.com/BuildGraph ../../Engine/Build/Graph/Schema.xsd" >
+
+	<!-- List of patterns that should always be excluded when making an installed build. Filter the default list of exclusions to include confidential platforms if they're enabled. -->
+	<Property Name="ConfidentialExceptions" Value=""/>
+	<ForEach Name="RestrictedFolderName" Values="$(RestrictedFolderNames)">
+		<ForEach Name="Platform" Values="$(ExtensionPlatforms)">
+			<Expand Name="FilterRestrictedFolders$(Platform)"/>
+		</ForEach>
+		<Do If="'$(RestrictedFolderName)' != ''">
+				<Property Name="ConfidentialExceptions" Value="$(ConfidentialExceptions);" If="'$(ConfidentialExceptions)' != ''"/>
+				<Property Name="ConfidentialExceptions" Value="$(ConfidentialExceptions).../$(RestrictedFolderName)/..."/>
+		</Do>
+	</ForEach>
+
+	<!-- List of file types to be stripped and signed for different platforms -->
+	<Property Name="Win64StripFilter" Value="*.pdb"/>
+	<Property Name="Win64StripExceptions" Value="Engine\Binaries\Win64\UE4Editor*.pdb;Engine\Plugins\...\Binaries\Win64\UE4Editor*.pdb"/>
+	<Property Name="LinuxStripFilter" Value="Engine\Binaries\Linux\*."/>
+
+	<Property Name="WindowsSignFilter" Value="*.exe;*.dll"/>
+
+	<Property Name="PluginsExceptions">
+		Engine/Plugins/Enterprise/StaticMeshEditorExtension/...
+	</Property>
+	<Property Name="MacSignFilter" Value="*.dylib;*.app"/>
+	<Property Name="SignExceptions" Value=".../ThirdParty/..."/>
+
+	<!-- List of projects to build DDC for -->
+	<Property Name="ProjectsToBuildDDC">
+		Templates/TP_FirstPersonBP/TP_FirstPersonBP.uproject
+		Templates/TP_ThirdPersonBP/TP_ThirdPersonBP.uproject
+	</Property>
+	
+	<!-- Define Editor Filters -->
+	<Property Name="CopyEditorFilter">
+		<!-- This assembly is normally embedded into the UBT executable, but it can technically be rebuilt from an installed build -->
+		Engine/Binaries/ThirdParty/Newtonsoft/...
+		Engine/Binaries/ThirdParty/VisualStudio/...
+
+		<!-- In-editor documentation -->
+		Engine/Documentation/Source/Shared/...
+		Engine/Documentation/Extras/...
+
+		<!-- Content folders -->
+		Engine/Content/...
+
+		<!-- Source code -->
+		Engine/Source/UE4Game.Target.cs
+		Engine/Source/UE4Editor.Target.cs
+
+		<!-- Templates -->
+		Templates/TemplateCategories.ini
+		Templates/Media/...
+		Templates/TP_Blank/...
+		Templates/TP_BlankBP/...
+		Templates/TP_FirstPerson/...
+		Templates/TP_FirstPersonBP/...
+		Templates/TP_ThirdPerson/...
+		Templates/TP_ThirdPersonBP/...
+		
+		<!-- Shared template resources -->
+		Templates/TemplateResources/...
+
+		<!-- Build files -->
+		Engine/Build/Build.version
+		Engine/Build/Target.cs.template
+		
+		<!-- Source code and demos for container images -->
+		Engine/Extras/Containers/...
+	</Property>
+	
+	<!-- Files which can exist under any engine or engine-platform directory -->
+	<Property Name="CopyEditorEngineOrPlatformFilter" Value="">
+		<!-- Config files -->
+		Config/...
+
+		<!-- Programs -->
+		Programs/...
+
+		<!-- Plugins -->
+		Plugins/....uplugin
+		Plugins/.../Content/...
+		Plugins/.../Config/...
+		Plugins/.../Resources/...
+		Plugins/.../Shaders/...
+		Plugins/.../Source/...
+		Plugins/.../Templates/...
+
+		<!-- Source code -->
+		Source/Runtime/...
+		Source/Developer/...
+		Source/Editor/...
+		Source/ThirdParty/Licenses/...
+		Source/Programs/AutomationTool/...
+		Source/Programs/AutomationToolLauncher/...
+		Source/Programs/DotNETCommon/...
+		Source/Programs/UnrealBuildTool/...
+		Source/Programs/UnrealHeaderTool/...
+
+		<!-- Third Party Software description files -->
+		.../*.tps
+
+		<!-- Shaders -->
+		Shaders/...
+	</Property>
+	
+	<!-- Projects to be compiled for UAT -->
+	<Property Name="AutomationToolPaths" Value="Engine/Source/Programs/AutomationTool/..."/>
+	
+	<!-- Platform extensions filter overrides -->
+	<ForEach Name="Platform" Values="$(ExtensionPlatforms)">
+		<Expand Name="$(Platform)FilterOverrides"/>
+	</ForEach>
+	
+	<ForEach Name="Filter" Values="$(CopyEditorEngineOrPlatformFilter)">
+		<Property Name="CopyEditorFilter" Value="$(CopyEditorFilter);Engine/$(Filter);Engine/Platforms/*/$(Filter)"/>
+	</ForEach>
+	<!-- Optional target files -->
+	<Property Name="CopyEditorFilter" Value="$(CopyEditorFilter);Engine/Source/UE4Client.Target.cs" If="$(WithClient)"/>
+	<Property Name="CopyEditorFilter" Value="$(CopyEditorFilter);Engine/Source/UE4Server.Target.cs" If="$(WithServer)"/>
+	<!-- Optional API docs -->
+	<Property Name="CopyEditorFilter" Value="$(CopyEditorFilter);Engine/Documentation/Builds/CppAPI-HTML.tgz" If="Exists('Engine/Documentation/Builds/CppAPI-HTML.tgz')"/>
+	<Property Name="CopyEditorFilter" Value="$(CopyEditorFilter);Engine/Documentation/Builds/BlueprintAPI-HTML.tgz" If="Exists('Engine/Documentation/Builds/BlueprintAPI-HTML.tgz')"/>
+	<!-- Define Editor Exceptions -->
+	<Property Name="CopyEditorExceptions">
+	
+		<!-- Content -->
+		Engine/Content/....psd
+		Engine/Content/....pdn
+		Engine/Content/....po
+
+		<!-- Programs -->
+		Engine/Programs/UnrealGameSync/...
+
+		<!-- Plugins -->
+		Engine/Plugins/Runtime/TwitchLiveStreaming/...
+		Engine/Plugins/Runtime/PacketHandlers/CompressionComponents/Oodle/...
+		Engine/Platforms/*/Plugins/Runtime/PacketHandlers/CompressionComponents/Oodle/...
+
+		<!-- Source code -->
+		Engine/Source/Runtime/SQLiteSupport/...
+
+		<!-- Exclude all the intermediate files in the Engine/Saved folder -->
+		Engine/Saved/...
+			<!-- Exclude generated config files/intermediates from Engine/Programs folder -->
+		Engine/Programs/AutomationTool/...
+		Engine/Programs/UnrealBuildTool/...
+		Engine/Programs/UnrealHeaderTool/Intermediate/...
+		Engine/Programs/UnrealHeaderTool/Saved/...
+
+		<!-- Exclude Template intermediates and other files not needed in installed build-->
+		Templates/*/Binaries/...
+		Templates/*/Build/Receipts/...
+		Templates/*/Intermediate/...
+		Templates/*/DerivedDataCache/...
+		Templates/*/Saved/...
+		Templates/*/manifest.json
+		Templates/*/contents.txt
+	</Property>
+
+	<!-- Filters for installed DDC -->
+	<Property Name="InstalledDDCEngineContent" Value="Content\..."/>
+	<Property Name="InstalledDDCEngineContentExcept" Value="....psd;....pdn;....fbx;....po"/>
+	<Property Name="InstalledDDCEngineConfig" Value="Config\..."/>
+	<Property Name="InstalledDDCEngineConfigExcept" Value="....vdf"/>
+	<Property Name="InstalledDDCEnginePlugins" Value="Plugins\....uplugin;Plugins\...\Config\...;Plugins\...\Content\...;Plugins\...\Resources\...;Plugins\...\Shaders\...;Plugins\...\Templates\..."/>
+	<Property Name="InstalledDDCEnginePluginsExcept" Value="Plugins\Runtime\TwitchLiveStreaming\..."/>
+	<Property Name="InstalledDDCEngineShaders" Value="Shaders\..."/>
+	<Property Name="InstalledDDCEngineShadersExcept" Value=""/>
+
+
+	<!-- Win64 editor specific dependencies -->
+	
+	<Property Name="CopyEditorFilterWin64" Value="$(CopyEditorFilter)">
+		<!-- Build batch files -->
+		Engine/Build/BatchFiles/Build.bat
+		Engine/Build/BatchFiles/Clean.bat
+		Engine/Build/BatchFiles/Rebuild.bat
+		Engine/Build/BatchFiles/RunUAT.bat
+		Engine/Build/BatchFiles/GetMSBuildPath.bat
+
+		<!-- Build utilities -->
+		Engine/Build/Windows/cl-filter/cl-filter.exe
+		Engine/Build/Windows/link-filter/link-filter.exe
+		Engine/Source/ThirdParty/Intel/ISPC/bin/Windows/ispc.exe
+
+		<!-- Default resource files -->
+		Engine/Build/Windows/Resources/...
+
+		<!-- Binaries which are explicitly staged by UAT rather than listing runtime dependencies -->
+		Engine/Binaries/ThirdParty/OpenSSL/...
+
+		<!-- Extra tools -->
+		Engine/Extras/3dsMaxScripts/...
+		Engine/Extras/VisualStudioDebugging/UE4.natvis
+		Engine/Extras/MayaLiveLink/...
+		Engine/Extras/MayaVelocityGridExporter/...
+		Engine/Extras/UnrealVS/...
+		Engine/Extras/Redist/en-us/*
+
+		<!-- CsvTools binaries which are manually updated in P4 -->
+		Engine/Binaries/DotNET/CsvTools/...
+
+		<!-- Binaries required to make Bink2 videos -->
+		Engine/Binaries/ThirdParty/Bink/...
+	</Property>
+
+	<Property Name="CopyEditorExceptionsWin64" Value="$(CopyEditorExceptions)">
+		<!-- Exclude Mac binaries on windows here, because previous wildcard for plugin resources matches OSX dsym resources on Windows -->
+		Engine/Plugins/.../Binaries/Mac/...
+	</Property>
+
+	<!-- Linux editor specific dependencies -->
+	
+	<Property Name="CopyEditorFilterLinux" Value="$(CopyEditorFilter)">
+		<!-- Build batch files -->
+		Engine/Build/BatchFiles/Linux/Build.sh
+		Engine/Build/BatchFiles/Linux/GenerateGDBInit.sh
+		Engine/Build/BatchFiles/Linux/FixDependencyFiles.sh
+		Engine/Build/BatchFiles/Linux/GenerateProjectFiles.sh
+		Engine/Build/BatchFiles/Linux/QASmokeManual.sh
+		Engine/Build/BatchFiles/Linux/Setup.sh
+		Engine/Build/BatchFiles/Linux/SetupEnvironment.sh
+		Engine/Build/BatchFiles/Linux/SetupMono.sh
+		Engine/Build/BatchFiles/Linux/FixMonoFiles.sh
+		Engine/Build/BatchFiles/Linux/RunMono.sh
+		Engine/Build/BatchFiles/Linux/RunXBuild.sh
+		Engine/Build/BatchFiles/RunUAT.sh
+
+		<!-- Debug tools -->
+		Engine/Binaries/Linux/dump_syms
+		Engine/Binaries/Linux/BreakpadSymbolEncoder
+
+		<!-- Mono -->
+		Engine/Binaries/ThirdParty/Mono/...
+
+		<!-- Extra tools -->
+		Engine/Extras/GDBPrinters/UE4Printers.py
+
+		<!-- Bundled libcxx -->
+		Engine/Source/ThirdParty/Linux/LibCxx/...
+	</Property>
+
+	<!-- Target Platform Filters/Exceptions -->
+
+	<!-- Win64 -->
+	<Property Name="CopyWin64Filter">
+		<!-- Natvis helpers for live coding -->
+		Engine/Extras/NatvisHelpers/Win64/NatvisHelpers.lib
+
+		<!-- App local dependencies -->
+		Engine/Binaries/ThirdParty/AppLocalDependencies/...
+	</Property>
+	<Property Name="CopyWin64Exceptions">
+	</Property>
+	
+	<!-- Linux -->
+	<Property Name="CopyLinuxFilter">
+		Engine/Binaries/ThirdParty/OpenAL/...
+		Engine/Binaries/ThirdParty/ICU/icu4c-53_1/Linux/x86_64-unknown-linux-gnu/*.so
+		Engine/Source/ThirdParty/Linux/LibCxx/...
+		Engine/Source/ThirdParty/Linux/HaveLinuxDependencies
+	</Property>
+
+	<Property Name="CopyLinuxFilterWin64" Value="$(CopyLinuxFilter)">
+		<!-- Linux cross build Debug tools -->
+		Engine/Binaries/Linux/dump_syms.exe
+		Engine/Binaries/Linux/BreakpadSymbolEncoder.exe
+	</Property>
+
+	<Property Name="CopyLinuxExceptions">
+	</Property>
+
+	<Property Name="CopyLinuxFilter" Value="$(CopyLinuxFilter);Engine/Extras/ThirdPartyNotUE/putty/..."/>	
+
+</BuildGraph>

@@ -1,0 +1,29 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+/*=============================================================================
+	PositionOnlyDepthOnlyVertexShader.hlsl: Depth-only vertex shader.
+=============================================================================*/
+
+#include "Common.ush"
+#include "/Engine/Generated/Material.ush"
+#include "/Engine/Generated/VertexFactory.ush"
+
+void Main(
+	FPositionOnlyVertexFactoryInput Input,
+	out float4 OutPosition : SV_POSITION
+#if USE_GLOBAL_CLIP_PLANE
+	, out float OutGlobalClipPlaneDistance : SV_ClipDistance
+#endif
+	)
+{
+	ResolvedView = ResolveView();
+
+	float4 WorldPos = VertexFactoryGetWorldPosition(Input);
+
+	{
+		OutPosition = INVARIANT(mul(WorldPos, ResolvedView.TranslatedWorldToClip));
+	}
+#if USE_GLOBAL_CLIP_PLANE
+	OutGlobalClipPlaneDistance = dot(ResolvedView.GlobalClippingPlane, float4(WorldPos.xyz - ResolvedView.PreViewTranslation.xyz, 1));
+#endif
+}

@@ -1,0 +1,78 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+/*=============================================================================
+	ShadingModelsMaterial.usf: Pixel shader function for computing a GBuffer from shading model.
+=============================================================================*/
+
+#include "SubsurfaceProfileCommon.ush"
+
+// Optimization: if opacity is 0 then revert to default shading model 
+#define SUBSURFACE_PROFILE_OPACITY_THRESHOLD 1
+
+void SetGBufferForShadingModel(
+	in out FGBufferData GBuffer, 
+	in const FMaterialPixelParameters MaterialParameters,
+	const float Opacity,
+	const half3 BaseColor,
+	const half3  ObjectNormal,
+	const float Roughness,
+	const float Anisotropy,
+	const float3 SubsurfaceColor,
+	const float SubsurfaceProfile,
+	const float Dither,
+	const uint ShadingModel)
+{
+	
+	bool hasObjectNormalConnected = ObjectNormal != 0.0f;
+	
+	GBuffer.WorldNormal = MaterialParameters.WorldNormal;
+	GBuffer.WorldTangent = MaterialParameters.WorldTangent;
+	GBuffer.BaseColor = BaseColor;
+	GBuffer.ObjectNormal = hasObjectNormalConnected ? ObjectNormal : MaterialParameters.ObjectNormal;
+	GBuffer.Roughness = Roughness;
+	GBuffer.Anisotropy = Anisotropy;
+	GBuffer.ShadingModelID = ShadingModel;
+
+	// Calculate and set custom data for the shading models that need it
+	
+	// Dummy initial if statement to play nicely with the #ifdef logic
+	if (false)
+	{
+	}
+#if MATERIAL_SHADINGMODEL_ICE
+	else if (ShadingModel == SHADINGMODELID_ICE)
+	{
+		GBuffer.CustomData.rgb = EncodeSubsurfaceColor(SubsurfaceColor);
+		GBuffer.CustomData.a = Opacity;
+	}
+#endif
+#if MATERIAL_SHADINGMODEL_SKIN
+	else if (ShadingModel == SHADINGMODELID_SKIN)
+	{
+		GBuffer.CustomData.rgb = EncodeSubsurfaceColor(SubsurfaceColor);
+		GBuffer.CustomData.a = Opacity;
+	}
+#endif
+#if MATERIAL_SHADINGMODEL_FOLIAGE
+	else if (ShadingModel == SHADINGMODELID_FOLIAGE)
+	{
+		GBuffer.CustomData.rgb = EncodeSubsurfaceColor(SubsurfaceColor);
+		GBuffer.CustomData.a = Opacity;
+	}
+#endif
+#if MATERIAL_SHADINGMODEL_HAIR
+	else if (ShadingModel == SHADINGMODELID_HAIR)
+	{
+		GBuffer.CustomData.xy = UnitVectorToOctahedron( MaterialParameters.WorldNormal ) * 0.5 + 0.5;
+		GBuffer.CustomData.z = saturate( GetMaterialCustomData0(MaterialParameters) );	// Backlit
+	}
+#endif
+#if MATERIAL_SHADINGMODEL_CLOTHING
+	else if (ShadingModel == SHADINGMODELID_CLOTHING)
+	{
+		GBuffer.CustomData.rgb = EncodeSubsurfaceColor(SubsurfaceColor);
+		GBuffer.CustomData.a = saturate( GetMaterialCustomData0(MaterialParameters) );	// Cloth
+		GBuffer.IndirectIrradiance *= 1 - GBuffer.CustomData.a;
+	}
+#endif
+}

@@ -1,0 +1,319 @@
+#
+# This file tells Git about engine files that never really belong in source control.  They are usually build products, log
+# files and intermediate files generated from a compiler or the engine runtime.
+#
+#
+# NOTE:
+#  Paths that start with / match paths relative to the root (where the .gitignore file is)
+#  Paths that end with / will match a folder and all files under it (but not a regular file with no extension)
+#  Use * for wildcards.  Wildcards stop at path separators
+#  Use ** for a wildcard that spans path separators
+#  Paths in this file should use forward slash characters, not back slashes
+#  Use \ to escape special characters like ! and #
+#  Use ! to negate a previous pattern.  But it doesn't work if the parent sub-folder was masked out already.
+#
+
+# Ignore all files by default, but scan all directories
+*
+!*/
+
+# C/C++ source files
+!*.c
+!*.cc
+!*.cpp
+!*.cpp.template
+!*.h
+!*.h.template
+!*.hpp
+!*.inl
+!*.inc
+!*.m
+!*.mm
+!*.rc
+!*.rc2
+!*.def
+!*.exp
+!*.manifest
+
+# ISPC files
+!*.ispc
+!*.isph
+
+# Re-ignore vs host manifest
+*.vshost.exe.manifest
+
+# Java source files
+!*.java
+!*.java.template
+
+# C# source files
+!*.cs
+!*.cs.template
+!*.aspx
+!*.resx
+
+# Shader formats
+!*.usf
+!*.ush
+!*.hlsl
+!*.glsl
+
+# Text files
+!*.txt
+!*.md
+
+# Script files
+!*.bat
+!*.sh
+!*.pl
+!*.py
+!*.js
+!*.ts
+!*.command
+
+# Other configuration and markup files
+!*.ini
+!*.json
+!*.tps
+!*.xml
+!*.xaml
+!*.uproject
+!*.uplugin
+!*.html
+!*.html.template
+!*.css
+!*.udn
+!*.config
+!*.version
+!.git*
+!.editorconfig
+
+# Projects and makefiles
+!*.cmake
+!*.mk
+!*.dsp
+!*.dsw
+!*.csproj
+!*.vcproj
+!*.vcxproj
+!*.vcxproj.filters
+!*.sln
+!*.xcodeproj
+!*.xcconfig
+!*.vsprops
+!*.snippet
+!Makefile
+!Makefile.*
+!Settings.settings
+
+# Specific names
+!README
+!AUTHORS
+!LICENSE
+!FAQ
+!VERSION
+!ChangeLog
+
+# Ignore Unix backup files
+*~
+
+# Exceptions
+/*.sln
+/*.xcodeproj
+/Makefile
+/CMakeLists.txt
+/cmake-build-debug
+*.target.xml
+*.dll.config
+*.exe.config
+*.exe.manifest
+/.kdev4/
+/UE4CodeCompletionFolders.txt
+/UE4CodeLitePreProcessor.txt
+
+# Add exceptions for Mac Mono binaries needed to run GitDependencies.exe.
+!/Engine/Binaries/ThirdParty/Mono/Mac/bin/*
+!/Engine/Binaries/ThirdParty/Mono/Mac/etc/mono/config
+!/Engine/Binaries/ThirdParty/Mono/Mac/etc/mono/4.5/machine.config
+!/Engine/Binaries/ThirdParty/Mono/Mac/lib/libMonoPosixHelper.dylib
+!/Engine/Binaries/ThirdParty/Mono/Mac/lib/mono/4.5/mscorlib.dll
+!/Engine/Binaries/ThirdParty/Mono/Mac/lib/mono/gac/Mono.Posix/4.0.0.0__0738eb9f132ed756/Mono.Posix.dll
+!/Engine/Binaries/ThirdParty/Mono/Mac/lib/mono/gac/Mono.Security/4.0.0.0__0738eb9f132ed756/Mono.Security.dll
+!/Engine/Binaries/ThirdParty/Mono/Mac/lib/mono/gac/System/4.0.0.0__b77a5c561934e089/System.dll
+!/Engine/Binaries/ThirdParty/Mono/Mac/lib/mono/gac/System.Configuration/4.0.0.0__b03f5f7f11d50a3a/System.Configuration.dll
+!/Engine/Binaries/ThirdParty/Mono/Mac/lib/mono/gac/System.Core/4.0.0.0__b77a5c561934e089/System.Core.dll
+!/Engine/Binaries/ThirdParty/Mono/Mac/lib/mono/gac/System.Xml/4.0.0.0__b77a5c561934e089/System.Xml.dll
+
+# Ignore the automatically created mono symlink
+/Engine/Binaries/ThirdParty/Mono/Mac/bin/mono
+
+# Add exceptions for Linux Mono binaries needed to run GitDependencies.exe.
+!/Engine/Binaries/ThirdParty/Mono/Linux/bin/*
+!/Engine/Binaries/ThirdParty/Mono/Linux/etc/mono/config
+!/Engine/Binaries/ThirdParty/Mono/Linux/etc/mono/4.5/machine.config
+!/Engine/Binaries/ThirdParty/Mono/Linux/x86_64-unknown-linux-gnu/bin/mono-boehm
+!/Engine/Binaries/ThirdParty/Mono/Linux/x86_64-unknown-linux-gnu/bin/mono-sgen
+!/Engine/Binaries/ThirdParty/Mono/Linux/x86_64-unknown-linux-gnu/lib/libMonoPosixHelper.so
+!/Engine/Binaries/ThirdParty/Mono/Linux/lib/mono/4.5/mscorlib.dll
+!/Engine/Binaries/ThirdParty/Mono/Linux/lib/mono/gac/Mono.Posix/4.0.0.0__0738eb9f132ed756/Mono.Posix.dll
+!/Engine/Binaries/ThirdParty/Mono/Linux/lib/mono/gac/Mono.Security/4.0.0.0__0738eb9f132ed756/Mono.Security.dll
+!/Engine/Binaries/ThirdParty/Mono/Linux/lib/mono/gac/System/4.0.0.0__b77a5c561934e089/System.dll
+!/Engine/Binaries/ThirdParty/Mono/Linux/lib/mono/gac/System.Configuration/4.0.0.0__b03f5f7f11d50a3a/System.Configuration.dll
+!/Engine/Binaries/ThirdParty/Mono/Linux/lib/mono/gac/System.Core/4.0.0.0__b77a5c561934e089/System.Core.dll
+!/Engine/Binaries/ThirdParty/Mono/Linux/lib/mono/gac/System.Xml/4.0.0.0__b77a5c561934e089/System.Xml.dll
+
+# Ignore the automatically created mono symlink
+/Engine/Binaries/ThirdParty/Mono/Linux/bin/mono
+/Engine/Binaries/ThirdParty/Mono/Linux/bin/mono-boehm
+/Engine/Binaries/ThirdParty/Mono/Linux/bin/mono-sgen
+
+# Add exceptions for GitDependencies.exe
+!/Engine/Binaries/DotNET/GitDependencies.exe
+!/Engine/Binaries/DotNET/GitDependencies.exe.config
+
+# Ignore documentation generated for C# tools
+/Engine/Binaries/DotNET/UnrealBuildTool.xml
+/Engine/Binaries/DotNET/AutomationScripts/BuildGraph.Automation.xml
+/Engine/Binaries/DotNET/AutomationScripts/Newtonsoft.Json.xml
+/Engine/Binaries/DotNET/AutomationScripts/HoloLens/System.Runtime.WindowsRuntime.xml
+/Engine/Binaries/DotNET/AutomationScripts/HoloLens/WindowsDevicePortalWrapper.xml
+/Engine/Source/Programs/AutomationTool/BuildGraph/BuildGraph.Automation.xml
+
+# Ignore Datasmith generated sources on all platforms
+/Engine/Binaries/**/DatasmithFacadeCSharp
+/Engine/Binaries/**/DatasmithSDK
+
+# Ignore Android packageInfo.txt file
+Engine/Binaries/Android/packageInfo.txt
+
+# Ignore version files in the Engine/Binaries directory created by UBT
+/Engine/Binaries/**/*.version
+
+# Ignore exp files in Engine and Plugin Binaries directories as they aren't C/C++ source files
+/Engine/**/Binaries/**/*.exp
+
+# Ignore temporary code folders generated by live coding
+enc_temp_folder/
+
+# Ignore plugin content folders
+/Engine/Plugins/**/Content
+/Engine/Content/*
+
+# Ignore DDC
+/Engine/DerivedDataCache/**
+
+# Ignore intermediate folders
+Intermediate/
+obj/
+
+# Ignore any saved local files
+Saved/
+/Engine/Programs/MemoryProfiler2/**
+/Engine/Programs/UnrealBuildTool/**
+/LocalBuilds/
+
+# Ignore Swarm local save files
+/Engine/Binaries/DotNET/SwarmAgent.DeveloperOptions.xml
+/Engine/Binaries/DotNET/SwarmAgent.Options.xml
+
+# Explcitly ignore Mac DS_Store files, regardless of where they are
+.DS_Store
+
+# Ignore VS / VS Code settings directory
+.vs
+.vscode
+
+# Ignore CLion directory
+.idea/
+
+# Annoying windows files
+[Dd]esktop.ini
+
+# Ignore the headers and cpp files in the clang toolchain on Linux
+Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/**
+
+# Ignore USD resources copied into Binaries directory at build time
+/Engine/Binaries/ThirdParty/USD/**
+
+# Ignore RiderLink
+/Engine/Plugins/Marketplace/Developer/RiderLink
+
+# Do NOT ignore buffer visualization content
+!/Engine/Content/BufferVisualization
+!/Engine/Content/BufferVisualization/*
+
+# Do NOT ignore Vulkan folders since they aren't going to be downloaded from Epic Games servers
+!/Engine/Binaries/ThirdParty/Vulkan
+!/Engine/Binaries/ThirdParty/Vulkan/*
+!/Engine/Source/ThirdParty/Vulkan
+!/Engine/Source/ThirdParty/Vulkan/*
+
+# Do NOT ignore this folders, they are cleaned
+!/Engine/Content/ArtTools/
+!/Engine/Content/ArtTools/RenderToTexture/
+!/Engine/Content/ArtTools/RenderToTexture/Materials/
+!/Engine/Content/ArtTools/RenderToTexture/Materials/Flipbooks/**/*
+!/Engine/Content/BasicShapes/
+!/Engine/Content/BasicShapes/**/*
+!/Engine/Content/EngineMaterials/
+!/Engine/Content/EngineMaterials/**/*
+!/Engine/Content/EditorLandscapeResources/
+!/Engine/Content/EditorLandscapeResources/**/*
+!/Engine/Content/EditorMaterials/
+!/Engine/Content/EditorMaterials/**/*
+!/Engine/Content/EditorMeshes/
+!/Engine/Content/EditorMeshes/**/*
+!/Engine/Content/EngineDebugMaterials/
+!/Engine/Content/EngineDebugMaterials/**/*
+!/Engine/Content/EngineResources/
+!/Engine/Content/EngineResources/**/*
+!/Engine/Content/EngineSky/
+!/Engine/Content/EngineSky/VolumetricClouds/
+!/Engine/Content/EngineSky/VolumetricClouds/**/*
+!/Engine/Content/Maps/
+!/Engine/Content/Maps/**/*
+!/Engine/Content/Templates/
+!/Engine/Content/Templates/**/*
+
+# Do NOT ignore this materials, they are cleaned
+!/Engine/Plugins/Runtime/
+!/Engine/Plugins/Runtime/HairStrands/
+!/Engine/Plugins/Runtime/HairStrands/Content/
+!/Engine/Plugins/Runtime/HairStrands/Content/Materials/**/*
+!/Engine/Plugins/Experimental/
+!/Engine/Plugins/Experimental/ImpostorBaker/
+!/Engine/Plugins/Experimental/ImpostorBaker/Content/
+!/Engine/Plugins/Experimental/ImpostorBaker/Content/Materials/**/*
+!/Engine/Plugins/Experimental/Volumetrics/
+!/Engine/Plugins/Experimental/Volumetrics/Content/
+!/Engine/Plugins/Experimental/Volumetrics/Content/Tools/
+!/Engine/Plugins/Experimental/Volumetrics/Content/Tools/FluidSimulation/
+!/Engine/Plugins/Experimental/Volumetrics/Content/Tools/FluidSimulation/Blueprints/
+!/Engine/Plugins/Experimental/Volumetrics/Content/Tools/FluidSimulation/Blueprints/Pawn/*
+!/Engine/Plugins/Experimental/Water/
+!/Engine/Plugins/Experimental/Water/Content/
+!/Engine/Plugins/Experimental/Water/Content/Caustics/
+!/Engine/Plugins/Experimental/Water/Content/Caustics/Materials/**/*
+!/Engine/Plugins/FX/
+!/Engine/Plugins/FX/Niagara/
+!/Engine/Plugins/FX/Niagara/Content/
+!/Engine/Plugins/FX/Niagara/Content/VectorFields/
+!/Engine/Plugins/FX/Niagara/Content/VectorFields/Assets/
+!/Engine/Plugins/FX/Niagara/Content/VectorFields/Assets/BoundingBoxEdge.uasset
+!/Engine/Plugins/FX/Niagara/Content/VectorFields/Assets/TransformGizmoMaterial.uasset
+!/Engine/Plugins/FX/Niagara/Content/VectorFields/Assets/TranslucentTransformGizmoMaterial.uasset
+!/Engine/Plugins/FX/Niagara/Content/VectorFields/Assets/VR_LaserPower_01.uasset
+!/Engine/Plugins/MovieScene/
+!/Engine/Plugins/MovieScene/MovieRenderPipeline/
+!/Engine/Plugins/MovieScene/MovieRenderPipeline/Content/
+!/Engine/Plugins/MovieScene/MovieRenderPipeline/Content/Materials/**/*
+
+# Do NOT ignore templates and feature packs
+!/FeaturePacks/
+!/FeaturePacks/**/*
+!/Templates/
+!/Templates/**/*
+
+# Provide up-to-date MSVC redistributable instead of a wrapper program
+!/Engine/Extras/Redist
+!/Engine/Extras/Redist/**/*
