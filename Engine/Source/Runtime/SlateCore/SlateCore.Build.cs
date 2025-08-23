@@ -57,5 +57,7 @@ public class SlateCore : ModuleRules
 			PublicDefinitions.Add("WITH_FREETYPE=0");
 			PublicDefinitions.Add("WITH_HARFBUZZ=0");
 		}
+
+		AddEngineThirdPartyPrivateStaticDependencies(Target, "XInput");
 	}
 }

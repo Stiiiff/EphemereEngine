@@ -225,12 +225,12 @@ FDirectLighting DefaultLitBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L,
 	#endif
 #endif
 	
-#if 0 // Enable Specular
+#if 1 // Enable Specular
 
 	#if 0 // Old Shading Model Specular Lighting
 		Lighting.Specular = AreaLight.FalloffColor * (Falloff * NoL) * SpecularGGX(GBuffer.Roughness, GBuffer.SpecularColor, Context, NoL, AreaLight);
 	#else
-		Lighting.Specular = AreaLight.FalloffColor * (Falloff * smoothstep(NewNoL, 0, 0.35)) * SpecularGGX(GBuffer.Roughness, GBuffer.SpecularColor, Context, NewNoL, AreaLight);
+		Lighting.Specular = AreaLight.FalloffColor * (Falloff * smoothstep(NewNoL, 0, 0.35)) * SpecularGGX(GBuffer.Roughness, GBuffer.SpecularColor, Context, NoL, AreaLight);
 	#endif
 #else
 	Lighting.Specular = 0;

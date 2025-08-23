@@ -28,6 +28,10 @@ public class ApplicationCore : ModuleRules
 
 		if (Target.IsInPlatformGroup(UnrealPlatformGroup.Windows))
 		{
+			AddEngineThirdPartyPrivateStaticDependencies(Target,
+				"XInput"
+			);
+
 			if (Target.bCompileWithAccessibilitySupport && !Target.bIsBuildingConsoleApplication)
 			{
 				PublicSystemLibraries.Add("uiautomationcore.lib");

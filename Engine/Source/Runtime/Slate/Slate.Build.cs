@@ -44,6 +44,8 @@ public class Slate : ModuleRules
 				"Runtime/Toolbox/Public/"
 			});
 
+		AddEngineThirdPartyPrivateStaticDependencies(Target, "XInput");
+
 		AddEngineThirdPartyPrivateStaticDependencies(Target, "SDL2");
 
 		// Add slate runtime dependencies
