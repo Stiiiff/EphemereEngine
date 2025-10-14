@@ -2420,16 +2420,20 @@ void GetMaterialCoverageAndClipping(FMaterialPixelParameters Parameters, FPixelM
 #endif
 }
 
-#define MATERIALBLENDING_MASKED_USING_COVERAGE (FORWARD_SHADING && MATERIALBLENDING_MASKED && SUPPORTS_PIXEL_COVERAGE)
+#define MATERIALBLENDING_MASKED_USING_COVERAGE (FORWARD_SHADING && MATERIALBLENDING_MASKED && SUPPORTS_PIXEL_COVERAGE && MATERIAL_USE_ALPHA_TO_COVERAGE)
 #if MATERIALBLENDING_MASKED_USING_COVERAGE
 
 uint GetDerivativeCoverageFromMask(float MaterialMask)
 {
 	uint Coverage = 0x0;
-	if (MaterialMask > 0.01) Coverage = 0x8;
-	if (MaterialMask > 0.25) Coverage = 0x9;
-	if (MaterialMask > 0.50) Coverage = 0xD;
-	if (MaterialMask > 0.75) Coverage = 0xF;
+	if (MaterialMask > 0.01) Coverage = 0x08;
+	if (MaterialMask > 0.125) Coverage = 0x18;
+	if (MaterialMask > 0.25) Coverage = 0x19;
+	if (MaterialMask > 0.375) Coverage = 0x39;
+	if (MaterialMask > 0.50) Coverage = 0x3D; 
+	if (MaterialMask > 0.625) Coverage = 0x7D;
+	if (MaterialMask > 0.75) Coverage = 0x7F;
+	if (MaterialMask > 0.875) Coverage = 0xFF;
 	return Coverage;
 }
 
