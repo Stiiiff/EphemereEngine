@@ -1988,7 +1988,7 @@ half3 GetMaterialBaseColor(FPixelMaterialInputs PixelMaterialInputs)
 
 half3 GetMaterialObjectNormalRaw(FMaterialPixelParameters MaterialParameter, FPixelMaterialInputs PixelMaterialInputs)
 {
-	if (dot(PixelMaterialInputs.ObjectNormal, PixelMaterialInputs.ObjectNormal) != 0.0f)
+	if (dot(MaterialParameter.ObjectNormal, PixelMaterialInputs.ObjectNormal) != 0.0f)
 	{
 		MaterialFloat3 LocalVector = (PixelMaterialInputs.ObjectNormal - 0.5) * 2;
 		LocalVector = normalize(LocalVector);
@@ -2004,7 +2004,7 @@ half3 GetMaterialObjectNormalRaw(FMaterialPixelParameters MaterialParameter, FPi
 
 half3 GetMaterialObjectNormal(FMaterialPixelParameters MaterialParameter, FPixelMaterialInputs PixelMaterialInputs)
 {
-	if (dot(PixelMaterialInputs.ObjectNormal, PixelMaterialInputs.ObjectNormal) != 0.0f)
+	if (dot(MaterialParameter.ObjectNormal, PixelMaterialInputs.ObjectNormal) != 0.0f)
 	{
 		return GetMaterialObjectNormalRaw(MaterialParameter, PixelMaterialInputs);
 	}
