@@ -1271,9 +1271,9 @@ void FHLSLMaterialTranslator::GetMaterialEnvironment(EShaderPlatform InPlatform,
 			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_CLOTHING"), TEXT("1"));
 			NumSetMaterials++;
 		}
-		if (ShadingModels.HasShadingModel(MSM_Ice))
+		if (ShadingModels.HasShadingModel(MSM_ThickTranslucent))
 		{
-			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_ICE"), TEXT("1"));
+			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_THICKTRANSLUCENT"), TEXT("1"));
 			NumSetMaterials++;
 		}
 

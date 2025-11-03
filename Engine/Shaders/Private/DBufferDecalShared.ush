@@ -16,11 +16,6 @@ struct FDBufferData
 	float3 PreMulWorldNormal;
 	// 0:opaque ..1:see through
 	float NormalOpacity;
-
-	// -1..1, premultiplied with RoughnessOpacity
-	float3 PreMulObjectNormal;
-	// 0:opaque ..1:see through
-	float ObjectNormalOpacity;
 };
 
 /** Populates DBufferA, DBufferB, DBufferC as float4 and puts opacity in alpha for frame buffer blending */
@@ -36,9 +31,6 @@ void EncodeDBufferData(FGBufferData GBufferData, float3 MultiOpacity,
 
 	// UNORM 4 channel, 128/255 represents 0
 	DBufferB = float4(GBufferData.WorldNormal * 0.5f + 128.0f/255.0f, MultiOpacity.y);
-
-	// UNORM 4 channel
-	DBufferC = float4(GBufferData.ObjectNormal, MultiOpacity.z);
 
 	// no need to output any data if the channel isn't used anyway (for DX10 we don't adjust the FrameBufferBlend state - it doesn't support different blend modes for different MRT)
 	{
@@ -69,10 +61,6 @@ FDBufferData DecodeDBufferData(
 	// UNORM 4 channel, 128/255 represents 0
 	ret.PreMulWorldNormal = DBufferB.rgb * 2 - (256.0 / 255.0);
 	ret.NormalOpacity = DBufferB.a;
-
-	// UNORM 4 channel
-	ret.PreMulObjectNormal = DBufferC.rgb;
-	ret.ObjectNormalOpacity = DBufferC.a;
 
 	return ret;
 }
@@ -117,11 +105,10 @@ FDBufferData GetDBufferData(float2 UV, uint RTWriteMaskBit)
 
 /** Populates DBufferA, DBufferB, DBufferC as float4 and puts opacity in alpha for frame buffer blending */
 void ApplyDBufferData(
-	FDBufferData DBufferData, inout float3 WorldNormal, inout float3 ObjectNormal, inout float3 SubsurfaceColor, inout float3 BaseColor)
+	FDBufferData DBufferData, inout float3 WorldNormal, inout float3 SubsurfaceColor, inout float3 BaseColor)
 {
 	// We normalise the normal to get smoother visual result (it helps to avoid having D_GGX explodes toward infinity, and matches DecodeGBufferData)
 	WorldNormal = normalize(WorldNormal * DBufferData.NormalOpacity + DBufferData.PreMulWorldNormal);
-	ObjectNormal = normalize(ObjectNormal * DBufferData.ObjectNormalOpacity + DBufferData.PreMulObjectNormal);
 
 	SubsurfaceColor *= DBufferData.ColorOpacity;
 

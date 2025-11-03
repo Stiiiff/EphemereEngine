@@ -253,8 +253,8 @@ namespace PixelInspector
 			return EMaterialShadingModel::MSM_Hair;
 		case PIXEL_INSPECTOR_SHADINGMODELID_CLOTHING:
 			return EMaterialShadingModel::MSM_Clothing;
-		case PIXEL_INSPECTOR_SHADINGMODELID_ICE:
-			return EMaterialShadingModel::MSM_Ice;
+		case PIXEL_INSPECTOR_SHADINGMODELID_THICKTRANSLUCENT:
+			return EMaterialShadingModel::MSM_ThickTranslucent;
 		};
 		return EMaterialShadingModel::MSM_Lit;
 	}
@@ -304,7 +304,7 @@ namespace PixelInspector
 			Opacity = 0.0f;
 		}
 		break;
-		case EMaterialShadingModel::MSM_Ice:
+		case EMaterialShadingModel::MSM_ThickTranslucent:
 		case EMaterialShadingModel::MSM_Skin:
 		case EMaterialShadingModel::MSM_Foliage:
 		{

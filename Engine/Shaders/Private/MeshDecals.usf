@@ -197,7 +197,6 @@ void FPixelShaderInOut_MainPS(
 
 	GBufferData.WorldNormal = MaterialParameters.WorldNormal;
 	GBufferData.BaseColor = BaseColor;
-	GBufferData.ObjectNormal = ObjectNormal;
 	GBufferData.Roughness = GetMaterialRoughness(PixelMaterialInputs);
 	GBufferData.CustomData = 0;
 	GBufferData.IndirectIrradiance = 0;

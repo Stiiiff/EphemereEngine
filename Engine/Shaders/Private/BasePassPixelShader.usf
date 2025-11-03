@@ -208,8 +208,8 @@ float3 GetTranslucencyVolumeLighting(
 
 			float3 BackscatteredLighting = 0;
 
-			#if MATERIAL_SHADINGMODEL_ICE
-			if (GBuffer.ShadingModelID == SHADINGMODELID_ICE)
+			#if MATERIAL_SHADINGMODEL_THICKTRANSLUCENT
+			if (GBuffer.ShadingModelID == SHADINGMODELID_THICKTRANSLUCENT)
 			{
 				float InScatterPower = GetMaterialTranslucentBackscatteringExponent();
 				// Setup a pow lobe to approximate anisotropic in-scattering near to the light direction
@@ -850,16 +850,16 @@ void FPixelShaderInOut_MainPS(
 
 	// If we don't use this shading model the color should be black (don't generate shader code for unused data, don't do indirectlighting cache lighting with this color).
 	float3 SubsurfaceColor = 0;
-#if MATERIAL_SHADINGMODEL_SKIN || MATERIAL_SHADINGMODEL_FOLIAGE || MATERIAL_SHADINGMODEL_CLOTHING || MATERIAL_SHADINGMODEL_ICE
-	if (ShadingModel == SHADINGMODELID_SKIN || ShadingModel == SHADINGMODELID_FOLIAGE || ShadingModel == SHADINGMODELID_CLOTHING || ShadingModel == SHADINGMODELID_ICE)
+#if MATERIAL_SHADINGMODEL_SKIN || MATERIAL_SHADINGMODEL_FOLIAGE || MATERIAL_SHADINGMODEL_CLOTHING || MATERIAL_SHADINGMODEL_THICKTRANSLUCENT
+	if (ShadingModel == SHADINGMODELID_SKIN || ShadingModel == SHADINGMODELID_FOLIAGE || ShadingModel == SHADINGMODELID_CLOTHING || ShadingModel == SHADINGMODELID_THICKTRANSLUCENT)
 	{
 		float4 SubsurfaceData = GetMaterialSubsurfaceData(PixelMaterialInputs);
 
 		if (false) // Dummy if to make the ifdef logic play nicely
 		{
 		}
-#if MATERIAL_SHADINGMODEL_ICE || MATERIAL_SHADINGMODEL_SKIN || MATERIAL_SHADINGMODEL_FOLIAGE
-		else if (ShadingModel == SHADINGMODELID_ICE || ShadingModel == SHADINGMODELID_SKIN || ShadingModel == SHADINGMODELID_FOLIAGE)
+#if MATERIAL_SHADINGMODEL_THICKTRANSLUCENT || MATERIAL_SHADINGMODEL_SKIN || MATERIAL_SHADINGMODEL_FOLIAGE
+		else if (ShadingModel == SHADINGMODELID_THICKTRANSLUCENT || ShadingModel == SHADINGMODELID_SKIN || ShadingModel == SHADINGMODELID_FOLIAGE)
 		{
 			SubsurfaceColor = SubsurfaceData.rgb * View.DiffuseOverrideParameter.w + View.DiffuseOverrideParameter.xyz;
 		}
@@ -899,7 +899,7 @@ void FPixelShaderInOut_MainPS(
 				float2 ScreenUV = NDC * ResolvedView.ScreenPositionScaleBias.xy + ResolvedView.ScreenPositionScaleBias.wz;
 				FDBufferData DBufferData = GetDBufferData(ScreenUV, DBufferMask);
 
-				ApplyDBufferData(DBufferData, MaterialParameters.WorldNormal, ObjectNormal, SubsurfaceColor, BaseColor);
+				ApplyDBufferData(DBufferData, MaterialParameters.WorldNormal, SubsurfaceColor, BaseColor);
 				DBufferOpacity = (DBufferData.ColorOpacity + DBufferData.NormalOpacity) * (1.0f / 3.0f);
 			}
 		}
@@ -928,7 +928,6 @@ void FPixelShaderInOut_MainPS(
 		MaterialParameters,
 		Opacity,
 		BaseColor,
-		ObjectNormal,
 		Roughness,
 		Anisotropy,
 		SubsurfaceColor,
@@ -995,7 +994,6 @@ void FPixelShaderInOut_MainPS(
 	}
 #endif
 	GBuffer.DiffuseColor = BaseColor - BaseColor * Metallic;
-	GBuffer.ObjectNormal = ObjectNormal;
 
 #if USE_DEVELOPMENT_SHADERS
 	{
@@ -1033,8 +1031,8 @@ void FPixelShaderInOut_MainPS(
 		float3 DiffuseDir = BentNormal;
 		float3 DiffuseColorForIndirect = GBuffer.DiffuseColor;
 
-		#if MATERIAL_SHADINGMODEL_ICE || MATERIAL_SHADINGMODEL_SKIN
-		if (GBuffer.ShadingModelID == SHADINGMODELID_ICE || GBuffer.ShadingModelID == SHADINGMODELID_SKIN)
+		#if MATERIAL_SHADINGMODEL_THICKTRANSLUCENT || MATERIAL_SHADINGMODEL_SKIN
+		if (GBuffer.ShadingModelID == SHADINGMODELID_THICKTRANSLUCENT || GBuffer.ShadingModelID == SHADINGMODELID_SKIN)
 		{
 			// Add subsurface energy to diffuse
 			//@todo - better subsurface handling for these shading models with skylight and precomputed GI
@@ -1199,8 +1197,8 @@ void FPixelShaderInOut_MainPS(
 #endif
 
 	// Volume lighting for lit translucency
-#if (MATERIAL_SHADINGMODEL_LIT || MATERIAL_SHADINGMODEL_ICE) && (MATERIALBLENDING_TRANSLUCENT || MATERIALBLENDING_ADDITIVE) && !SIMPLE_FORWARD_SHADING && !FORWARD_SHADING
-	if (GBuffer.ShadingModelID == SHADINGMODELID_LIT || GBuffer.ShadingModelID == SHADINGMODELID_ICE)
+#if (MATERIAL_SHADINGMODEL_LIT || MATERIAL_SHADINGMODEL_THICKTRANSLUCENT) && (MATERIALBLENDING_TRANSLUCENT || MATERIALBLENDING_ADDITIVE) && !SIMPLE_FORWARD_SHADING && !FORWARD_SHADING
+	if (GBuffer.ShadingModelID == SHADINGMODELID_LIT || GBuffer.ShadingModelID == SHADINGMODELID_THICKTRANSLUCENT)
 	{
 		Color += GetTranslucencyVolumeLighting(MaterialParameters, PixelMaterialInputs, BasePassInterpolants, GBuffer, IndirectIrradiance);
 	}

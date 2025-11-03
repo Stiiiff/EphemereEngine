@@ -1356,7 +1356,7 @@ UMaterial* FMaterialUtilities::CreateMaterial(const FFlattenMaterial& InFlattenM
 			MaterialNodeY += MaterialNodeStepY;
 		}
 
-		Material->SetShadingModel(MSM_Ice);
+		Material->SetShadingModel(MSM_ThickTranslucent);
 
 	}
 	else if (InFlattenMaterial.DoesPropertyContainData(EFlattenMaterialProperties::SubSurface))
@@ -1377,7 +1377,7 @@ UMaterial* FMaterialUtilities::CreateMaterial(const FFlattenMaterial& InFlattenM
 		Material->SubsurfaceColor.Expression = SubSurfaceColorExpression;
 		MaterialNodeY += MaterialNodeStepY;
 
-		Material->SetShadingModel(MSM_Ice);
+		Material->SetShadingModel(MSM_ThickTranslucent);
 	}
 
 							

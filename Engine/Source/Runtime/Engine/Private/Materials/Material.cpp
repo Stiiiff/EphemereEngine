@@ -5846,7 +5846,7 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 		Active = ShadingModels.HasAnyShadingModel({  MSM_Metal, MSM_Hair }) && (!bIsTranslucentBlendMode || !bIsVolumetricTranslucencyLightingMode);
 		break;
 	case MP_SubsurfaceColor:
-		Active = ShadingModels.HasAnyShadingModel({ MSM_Skin, MSM_Foliage, MSM_Clothing, MSM_Ice });
+		Active = ShadingModels.HasAnyShadingModel({ MSM_Skin, MSM_Foliage, MSM_Clothing, MSM_ThickTranslucent });
 		break;
 	case MP_CustomData0:
 		Active = ShadingModels.HasAnyShadingModel({ MSM_Metal, MSM_Hair, MSM_Clothing });

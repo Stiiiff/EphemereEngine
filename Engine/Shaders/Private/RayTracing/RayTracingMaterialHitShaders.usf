@@ -403,10 +403,10 @@ RAY_TRACING_ENTRY_CLOSEST_HIT(MaterialCHS,
 	Payload.CustomData = float4(GetMaterialCustomData0(MaterialParameters), GetMaterialCustomData1(MaterialParameters), 0, 0);
 
 	// Override custom data if sub-surface material
-#if MATERIAL_SHADINGMODEL_FOLIAGE || MATERIAL_SHADINGMODEL_CLOTHING || MATERIAL_SHADINGMODEL_ICE
+#if MATERIAL_SHADINGMODEL_FOLIAGE || MATERIAL_SHADINGMODEL_CLOTHING || MATERIAL_SHADINGMODEL_THICKTRANSLUCENT
 	if (Payload.ShadingModelID == SHADINGMODELID_FOLIAGE ||
 		Payload.ShadingModelID == SHADINGMODELID_CLOTHING ||
-		Payload.ShadingModelID == SHADINGMODELID_ICE)
+		Payload.ShadingModelID == SHADINGMODELID_THICKTRANSLUCENT)
 	{
 		Payload.CustomData = GetMaterialSubsurfaceData(PixelMaterialInputs);
 	}

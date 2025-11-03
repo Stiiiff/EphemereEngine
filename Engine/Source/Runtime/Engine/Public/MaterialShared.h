@@ -91,7 +91,7 @@ extern FName GetMaterialQualityLevelFName(EMaterialQualityLevel::Type InMaterial
 inline bool IsSubsurfaceShadingModel(FMaterialShadingModelField ShadingModel)
 {
 	return ShadingModel.HasShadingModel(MSM_Skin) || ShadingModel.HasShadingModel(MSM_Foliage) ||
-		ShadingModel.HasShadingModel(MSM_Clothing) || ShadingModel.HasShadingModel(MSM_Ice);
+		ShadingModel.HasShadingModel(MSM_Clothing) || ShadingModel.HasShadingModel(MSM_ThickTranslucent);
 }
 
 inline bool UseSubsurfaceProfile(FMaterialShadingModelField ShadingModel)
@@ -620,7 +620,6 @@ public:
 			IsSceneTextureUsed(PPI_SpecularColor) ||
 			IsSceneTextureUsed(PPI_SubsurfaceColor) ||
 			IsSceneTextureUsed(PPI_BaseColor) ||
-			IsSceneTextureUsed(PPI_ObjectNormal) ||
 			IsSceneTextureUsed(PPI_WorldNormal) ||
 			IsSceneTextureUsed(PPI_WorldTangent) ||
 			IsSceneTextureUsed(PPI_Opacity) ||
@@ -630,8 +629,6 @@ public:
 			IsSceneTextureUsed(PPI_DecalMask) ||
 			IsSceneTextureUsed(PPI_ShadingModelColor) ||
 			IsSceneTextureUsed(PPI_ShadingModelID) ||
-			IsSceneTextureUsed(PPI_StoredBaseColor) ||
-			IsSceneTextureUsed(PPI_StoredSpecular) ||
 			IsSceneTextureUsed(PPI_Velocity);
 	}
 

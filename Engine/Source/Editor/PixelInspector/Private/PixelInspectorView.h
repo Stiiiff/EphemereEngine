@@ -120,7 +120,7 @@ class UPixelInspectorView : public UObject
 	//////////////////////////////////////////////////////////////////////////
 	// Per shader model Data
 
-	//MSM_Ice
+	//MSM_ThickTranslucent
 	//MSM_Skin
 	//MSM_Foliage
 	FVector SubSurfaceColor; // GBufferD RGB

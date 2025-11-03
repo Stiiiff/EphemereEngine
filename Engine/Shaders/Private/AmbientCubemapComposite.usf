@@ -403,7 +403,7 @@ void MainPS(in noperspective float4 UVAndScreenPos : TEXCOORD0, float4 SvPositio
 	float AmbientOcclusion = GBuffer.GBufferAO * AmbientOcclusionTexture.SampleLevel(AmbientOcclusionSampler, BufferUV, 0).r;
 
 	// Subsurface
-	BRANCH if(GBuffer.ShadingModelID == SHADINGMODELID_ICE || GBuffer.ShadingModelID == SHADINGMODELID_SKIN)
+	BRANCH if(GBuffer.ShadingModelID == SHADINGMODELID_THICKTRANSLUCENT || GBuffer.ShadingModelID == SHADINGMODELID_SKIN)
 	{
 		// some view dependent and some non view dependent (hard coded)
 		float DependentSplit = 0.5f;

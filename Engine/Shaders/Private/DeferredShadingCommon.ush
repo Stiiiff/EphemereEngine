@@ -342,7 +342,7 @@ bool IsSubsurfaceModel(int ShadingModel)
 	return ShadingModel == SHADINGMODELID_SKIN 
 		|| ShadingModel == SHADINGMODELID_FOLIAGE
 		|| ShadingModel == SHADINGMODELID_HAIR
-		|| ShadingModel == SHADINGMODELID_ICE;
+		|| ShadingModel == SHADINGMODELID_THICKTRANSLUCENT;
 }
 
 bool UseSubsurfaceProfile(int ShadingModel)
@@ -357,7 +357,7 @@ bool HasCustomGBufferData(int ShadingModelID)
 		|| ShadingModelID == SHADINGMODELID_FOLIAGE
 		|| ShadingModelID == SHADINGMODELID_HAIR
 		|| ShadingModelID == SHADINGMODELID_CLOTHING
-		|| ShadingModelID == SHADINGMODELID_ICE;
+		|| ShadingModelID == SHADINGMODELID_THICKTRANSLUCENT;
 }
 
 bool HasAnisotropy(int SelectiveOutputMask)
@@ -378,8 +378,6 @@ struct FGBufferData
 	float3 SpecularColor;
 	// 0..1, white for SHADINGMODELID_SUBSURFACE_PROFILE and SHADINGMODELID_EYE (apply BaseColor after scattering is more correct and less blurry)
 	float3 BaseColor;
-	// 0..1
-	float3 ObjectNormal;
 	// 0..1
 	float4 CustomData;
 	// Indirect irradiance luma
@@ -408,13 +406,6 @@ struct FGBufferData
 	float Depth;
 	// Velocity for motion blur (only used when WRITES_VELOCITY_TO_GBUFFER is enabled)
 	float4 Velocity;
-
-	// 0..1, only needed by SHADINGMODELID_SUBSURFACE_PROFILE and SHADINGMODELID_EYE which apply BaseColor later
-	float3 StoredBaseColor;
-	// 0..1, only needed by SHADINGMODELID_SUBSURFACE_PROFILE and SHADINGMODELID_EYE which apply Specular later
-	float StoredSpecular;
-	// 0..1, only needed by SHADINGMODELID_EYE which encodes Iris Distance inside Metallic
-	float StoredMetallic;
 };
 
 bool CastContactShadow(FGBufferData GBufferData)
@@ -469,20 +460,10 @@ void EncodeGBuffer(
 	}
 	else
 	{
-#if 1
 		OutGBufferA.rgb = EncodeNormal( GBuffer.WorldNormal );
 		OutGBufferA.a = GBuffer.Roughness;
-#else
-		float3 Normal = GBuffer.WorldNormal;
-		uint   NormalFace = 0;
-		EncodeNormal( Normal, NormalFace );
 
-		OutGBufferA.rg = Normal.xy;
-		OutGBufferA.b = 0;
-		OutGBufferA.a = GBuffer.PerObjectGBufferData;
-#endif
-
-		OutGBufferB.rgb = EncodeNormal(GBuffer.ObjectNormal);
+		OutGBufferB.rgb = 0; // Empty for now, we keep it in case we need to implement a new GBuffer later on.
 		OutGBufferB.a = EncodeShadingModelIdAndSelectiveOutputMask(GBuffer.ShadingModelID, GBuffer.SelectiveOutputMask);
 
 		OutGBufferC.rgb = EncodeBaseColor( GBuffer.BaseColor );
@@ -582,7 +563,6 @@ FGBufferData DecodeGBufferData(
 	}
 
 	GBuffer.Roughness = InGBufferA.a;
-	GBuffer.ObjectNormal = DecodeNormal(InGBufferB.rgb);
 	// Note: must match GetShadingModelId standalone function logic
 	// Also Note: SimpleElementPixelShader directly sets SV_Target2 ( GBufferB ) to indicate unlit.
 	// An update there will be required if this layout changes.
@@ -606,10 +586,7 @@ FGBufferData DecodeGBufferData(
 	GBuffer.CustomDepth = ConvertFromDeviceZ(CustomNativeDepth);
 	GBuffer.CustomStencil = CustomStencil;
 	GBuffer.Depth = SceneDepth;
-
-	GBuffer.StoredBaseColor = GBuffer.BaseColor;
-	GBuffer.StoredMetallic = 0;
-	GBuffer.StoredSpecular = 0;
+	
 	float Metallic = 0;
 #if MATERIAL_SHADINGMODEL_METAL
 	Metallic = 1;

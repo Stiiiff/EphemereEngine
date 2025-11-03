@@ -12,7 +12,7 @@
 #define PIXEL_INSPECTOR_SHADINGMODELID_FOLIAGE 4
 #define PIXEL_INSPECTOR_SHADINGMODELID_HAIR 5
 #define PIXEL_INSPECTOR_SHADINGMODELID_CLOTHING 6
-#define PIXEL_INSPECTOR_SHADINGMODELID_ICE 7
+#define PIXEL_INSPECTOR_SHADINGMODELID_THICKTRANSLUCENT 7
 #define PIXEL_INSPECTOR_SHADINGMODELID_MASK 0xF
 
 namespace PixelInspector
@@ -97,7 +97,7 @@ namespace PixelInspector
 		//////////////////////////////////////////////////////////////////////////
 		// Per shader model Data
 
-		//MSM_Ice
+		//MSM_ThickTranslucent
 		//MSM_Skin
 		//MSM_Foliage
 		FLinearColor SubSurfaceColor; // GBufferD RGB

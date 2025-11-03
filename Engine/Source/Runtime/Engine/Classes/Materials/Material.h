@@ -532,7 +532,7 @@ public:
 	float TranslucentSelfShadowSecondOpacity;
 
 	/** 
-	 * Controls how diffuse the material's backscattering is when using the MSM_Ice shading model.
+	 * Controls how diffuse the material's backscattering is when using the MSM_ThickTranslucent shading model.
 	 * Larger exponents give a less diffuse look (smaller, brighter backscattering highlight).
 	 * This is only used when the object is casting a volumetric translucent shadow from a directional light.
 	 */

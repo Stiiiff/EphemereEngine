@@ -10,7 +10,7 @@
 #define SHADINGMODELID_FOLIAGE				4
 #define SHADINGMODELID_HAIR					5
 #define SHADINGMODELID_CLOTHING				6
-#define SHADINGMODELID_ICE					7
+#define SHADINGMODELID_THICKTRANSLUCENT		7
 #define SHADINGMODELID_NUM					8
 #define SHADINGMODELID_MASK					0xF		// 4 bits reserved for ShadingModelID			
 
@@ -43,7 +43,7 @@ float3 GetShadingModelColor(uint ShadingModelID)
 	else if (ShadingModelID == SHADINGMODELID_FOLIAGE) return float3(0.2f, 0.2f, 0.8f); // Blue
 	else if (ShadingModelID == SHADINGMODELID_HAIR) return float3(0.6f, 0.1f, 0.5f);
 	else if (ShadingModelID == SHADINGMODELID_CLOTHING) return float3(0.7f, 1.0f, 1.0f); 
-	else if (ShadingModelID == SHADINGMODELID_ICE) return float3(0.3f, 1.0f, 1.0f);
+	else if (ShadingModelID == SHADINGMODELID_THICKTRANSLUCENT) return float3(0.3f, 1.0f, 1.0f);
 	else return float3(1.0f, 1.0f, 1.0f); // White
 #else
 	switch(ShadingModelID)
@@ -55,7 +55,7 @@ float3 GetShadingModelColor(uint ShadingModelID)
 		case SHADINGMODELID_FOLIAGE: return float3(0.2f, 0.2f, 0.8f); // Cyan
 		case SHADINGMODELID_HAIR: return float3(0.6f, 0.1f, 0.5f);
 		case SHADINGMODELID_CLOTHING: return float3(0.7f, 1.0f, 1.0f);
-		case SHADINGMODELID_ICE: return float3(0.3f, 1.0f, 1.0f);
+		case SHADINGMODELID_THICKTRANSLUCENT:return float3(0.3f, 1.0f, 1.0f);
 		default: return float3(1.0f, 1.0f, 1.0f); // White
 	}
 #endif
