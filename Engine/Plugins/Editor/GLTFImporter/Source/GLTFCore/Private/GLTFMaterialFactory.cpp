@@ -209,13 +209,6 @@ namespace GLTF
 									  ETextureMode::Color,
 									  MaterialElement.GetBaseColor());
 
-			// Metallic
-			Maps.Emplace(GLTFMaterial.MetallicRoughness.MetallicFactor,
-						 TEXT("Metallic Factor"),
-						 FPBRMapFactory::EChannel::Blue,
-						 &MaterialElement.GetObjectNormal(),
-						 nullptr);
-
 			// Roughness
 			Maps.Emplace(GLTFMaterial.MetallicRoughness.RoughnessFactor,
 						 TEXT("Roughness Factor"),
@@ -236,7 +229,6 @@ namespace GLTF
 			FMaterialExpressionFunctionCall* SpecGlossToMetalRough = MaterialElement.AddMaterialExpression<FMaterialExpressionFunctionCall>();
 			SpecGlossToMetalRough->SetFunctionPathName(TEXT("/GLTFImporter/SpecGlossToMetalRoughness.SpecGlossToMetalRoughness"));
 			SpecGlossToMetalRough->ConnectExpression(MaterialElement.GetBaseColor(), 0);
-			SpecGlossToMetalRough->ConnectExpression(MaterialElement.GetObjectNormal(), 1);
 
 			FMaterialExpressionGeneric* GlossToRoughness = MaterialElement.AddMaterialExpression<FMaterialExpressionGeneric>();
 			GlossToRoughness->SetExpressionName(TEXT("OneMinus"));

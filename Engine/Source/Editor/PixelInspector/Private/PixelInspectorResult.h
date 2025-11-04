@@ -34,7 +34,6 @@ namespace PixelInspector
 
 			Normal = FVector(0.0f);
 			Roughness = 0.0f;
-			ObjectNormal = FVector(0.0f);
 			ShadingModel = MSM_Lit;
 			SelectiveOutputMask = 0;
 			BaseColor = FLinearColor::Black;
@@ -85,7 +84,7 @@ namespace PixelInspector
 		//Buffers value
 		FVector Normal; //GBufferA RGB
 		float Roughness; //GBufferA A
-		FVector ObjectNormal; //GBufferB RGB
+		 //GBufferB RGB
 		EMaterialShadingModel ShadingModel; //GBufferB A encode
 		int32 SelectiveOutputMask; //GBufferB A encode
 		FLinearColor BaseColor; //GBufferC RGB

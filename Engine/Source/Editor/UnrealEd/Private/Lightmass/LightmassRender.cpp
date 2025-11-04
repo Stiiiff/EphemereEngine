@@ -587,9 +587,6 @@ public:
 		case MP_DiffuseColor:
 			bConnected = InMaterial->BaseColor.Expression != NULL;
 			break;
-		case MP_ObjectNormal :
-			bConnected = InMaterial->ObjectNormal .Expression != NULL;
-			break;
 		case MP_Normal:
 			bConnected = InMaterial->Normal.Expression != NULL;
 			break;

@@ -590,7 +590,6 @@ EFlattenMaterialProperties FMeshMergeUtilities::NewToOldProperty(int32 NewProper
 		EFlattenMaterialProperties::NumFlattenMaterialProperties,
 		EFlattenMaterialProperties::NumFlattenMaterialProperties,
 		EFlattenMaterialProperties::Diffuse,
-		EFlattenMaterialProperties::ObjectNormal,
 		EFlattenMaterialProperties::Roughness,
 		EFlattenMaterialProperties::Anisotropy,
 		EFlattenMaterialProperties::Normal,
@@ -628,9 +627,6 @@ UMaterialOptions* FMeshMergeUtilities::PopulateMaterialOptions(const FMaterialPr
 	{
 		MaterialOptions->Properties.Add(Property);
 	}
-
-	PopulatePropertyEntry(MaterialSettings, MP_ObjectNormal, Property);
-		MaterialOptions->Properties.Add(Property);
 
 	PopulatePropertyEntry(MaterialSettings, MP_Normal, Property);
 	if (MaterialSettings.bNormalMap)
@@ -677,7 +673,6 @@ void FMeshMergeUtilities::PopulatePropertyEntry(const FMaterialProxySettings& Ma
 					case MP_BaseColor: return MaterialSettings.DiffuseTextureSize;
 					case MP_Roughness: return MaterialSettings.RoughnessTextureSize;
 					case MP_Anisotropy: return MaterialSettings.AnisotropyTextureSize;
-					case MP_ObjectNormal: return MaterialSettings.ObjectNormalTextureSize;
 					case MP_Normal: return MaterialSettings.NormalTextureSize;
 					case MP_Tangent: return MaterialSettings.TangentTextureSize;
 					case MP_Opacity: return MaterialSettings.OpacityTextureSize;
@@ -710,8 +705,7 @@ void FMeshMergeUtilities::PopulatePropertyEntry(const FMaterialProxySettings& Ma
 				case MP_Tangent: return HalfRes;
 				case MP_BaseColor: return HalfRes;
 				case MP_Roughness: return QuarterRes;
-				case MP_Anisotropy: return QuarterRes;
-				case MP_ObjectNormal: return QuarterRes;				
+				case MP_Anisotropy: return QuarterRes;			
 				case MP_Opacity: return QuarterRes;
 				case MP_OpacityMask: return QuarterRes;
 				case MP_EmissiveColor: return QuarterRes;
@@ -745,7 +739,6 @@ void FMeshMergeUtilities::PopulatePropertyEntry(const FMaterialProxySettings& Ma
 			case MP_Tangent: return !MaterialSettings.bTangentMap;
 			case MP_Roughness: return !MaterialSettings.bRoughnessMap;
 			case MP_Anisotropy: return !MaterialSettings.bAnisotropyMap;
-			case MP_ObjectNormal: return false;
 			case MP_Opacity: return !MaterialSettings.bOpacityMap;
 			case MP_OpacityMask: return !MaterialSettings.bOpacityMaskMap;
 			case MP_EmissiveColor: return !MaterialSettings.bEmissiveMap;
@@ -767,7 +760,6 @@ void FMeshMergeUtilities::PopulatePropertyEntry(const FMaterialProxySettings& Ma
 			case MP_Tangent: return 1.0f;
 			case MP_Roughness: return MaterialSettings.RoughnessConstant;
 			case MP_Anisotropy: return MaterialSettings.AnisotropyConstant;
-			case MP_ObjectNormal: return 1.0f;
 			case MP_Opacity: return MaterialSettings.OpacityConstant;
 			case MP_OpacityMask: return MaterialSettings.OpacityMaskConstant;
 			case MP_EmissiveColor: return 0.0f;
@@ -1727,7 +1719,7 @@ bool FMeshMergeUtilities::IsValidBaseMaterial(const UMaterialInterface* InBaseMa
 		};
 
 		TArray<FMaterialParameterInfo> TextureParameterInfos;
-		TArray<FName> RequiredTextureNames = { TEXT("DiffuseTexture"), TEXT("NormalTexture"), TEXT("PackedTexture"), TEXT("ObjectNormalTexture"), TEXT("RoughnessTexture"), TEXT("EmissiveTexture"), TEXT("OpacityTexture"), TEXT("OpacityMaskTexture"), TEXT("AmbientOcclusionTexture") };
+		TArray<FName> RequiredTextureNames = { TEXT("DiffuseTexture"), TEXT("NormalTexture"), TEXT("PackedTexture"), TEXT("RoughnessTexture"), TEXT("EmissiveTexture"), TEXT("OpacityTexture"), TEXT("OpacityMaskTexture"), TEXT("AmbientOcclusionTexture") };
 		InBaseMaterial->GetAllTextureParameterInfo(TextureParameterInfos, ParameterIds);
 		NameCheckLambda(TextureParameterInfos, RequiredTextureNames);
 
@@ -1737,12 +1729,12 @@ bool FMeshMergeUtilities::IsValidBaseMaterial(const UMaterialInterface* InBaseMa
 		NameCheckLambda(ScalarParameterInfos, RequiredScalarNames);
 
 		TArray<FMaterialParameterInfo> VectorParameterInfos;
-		TArray<FName> RequiredVectorNames = { TEXT("DiffuseConst"), TEXT("EmissiveConst"), TEXT("ObjectNormalConstant")};
+		TArray<FName> RequiredVectorNames = { TEXT("DiffuseConst"), TEXT("EmissiveConst")};
 		InBaseMaterial->GetAllVectorParameterInfo(VectorParameterInfos, ParameterIds);
 		NameCheckLambda(VectorParameterInfos, RequiredVectorNames);
 
 		TArray<FMaterialParameterInfo> StaticSwitchParameterInfos;
-		TArray<FName> RequiredSwitchNames = { TEXT("UseDiffuse"), TEXT("PackObjectNormal"), TEXT("PackRoughness"),TEXT("UseObjectNormal"), TEXT("UseRoughness"), TEXT("UseEmissive"), TEXT("UseOpacity"), TEXT("UseOpacityMask"), TEXT("UseAmbientOcclusion") };
+		TArray<FName> RequiredSwitchNames = { TEXT("UseDiffuse"), TEXT("PackRoughness"),TEXT("UseRoughness"), TEXT("UseEmissive"), TEXT("UseOpacity"), TEXT("UseOpacityMask"), TEXT("UseAmbientOcclusion") };
 		InBaseMaterial->GetAllStaticSwitchParameterInfo(StaticSwitchParameterInfos, ParameterIds);
 		NameCheckLambda(StaticSwitchParameterInfos, RequiredSwitchNames);
 

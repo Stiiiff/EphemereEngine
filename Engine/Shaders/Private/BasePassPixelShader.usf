@@ -831,7 +831,6 @@ void FPixelShaderInOut_MainPS(
 	// Store the results in local variables and reuse instead of calling the functions multiple times.
 	half3 BaseColor = GetMaterialBaseColor(PixelMaterialInputs);
 	half  Metallic = 0.0f;
-	half3 ObjectNormal = GetMaterialObjectNormal(MaterialParameters, PixelMaterialInputs);
 	half Specular = 0.2f;
 
 	float MaterialAO = GetMaterialAmbientOcclusion(PixelMaterialInputs);

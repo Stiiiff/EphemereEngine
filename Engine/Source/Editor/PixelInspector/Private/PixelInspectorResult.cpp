@@ -142,10 +142,11 @@ namespace PixelInspector
 	{
 		if (BufferBCDEValue.Num() > 0)
 		{
-			ObjectNormal = DecodeNormalFromBuffer(ConvertLinearRGBToFloat(BufferBCDEValue[0]));
+			// Commented for now because we don't use the GBuffer B
+			/** ObjectNormal = DecodeNormalFromBuffer(ConvertLinearRGBToFloat(BufferBCDEValue[0]));
 			float EncodedChannel = (float)(BufferBCDEValue[0].A) / 255.0f;
 			ShadingModel = DecodeShadingModel(EncodedChannel);
-			SelectiveOutputMask = DecodeSelectiveOutputMask(EncodedChannel);
+			SelectiveOutputMask = DecodeSelectiveOutputMask(EncodedChannel); **/
 		}
 		if (BufferBCDEValue.Num() > 1)
 		{
@@ -176,10 +177,11 @@ namespace PixelInspector
 	{
 		if (BufferBCDEValue.Num() > 0)
 		{
-			ObjectNormal = DecodeNormalFromBuffer(FVector(BufferBCDEValue[0].R.GetFloat(), BufferBCDEValue[0].G.GetFloat(), BufferBCDEValue[0].B.GetFloat()));
+			// Commented for now because we don't use the GBuffer B
+			/** ObjectNormal = DecodeNormalFromBuffer(FVector(BufferBCDEValue[0].R.GetFloat(), BufferBCDEValue[0].G.GetFloat(), BufferBCDEValue[0].B.GetFloat()));
 			float EncodedChannel = BufferBCDEValue[0].A.GetFloat();
 			ShadingModel = DecodeShadingModel(EncodedChannel);
-			SelectiveOutputMask = DecodeSelectiveOutputMask(EncodedChannel);
+			SelectiveOutputMask = DecodeSelectiveOutputMask(EncodedChannel); **/
 		}
 		if (BufferBCDEValue.Num() > 1)
 		{

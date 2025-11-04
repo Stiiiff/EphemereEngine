@@ -265,7 +265,6 @@ public:
 		case MP_BaseColor: ResourceId.Usage = EMaterialShaderMapUsage::MaterialExportBaseColor; break;
 		case MP_Normal: ResourceId.Usage = EMaterialShaderMapUsage::MaterialExportNormal; break;
 		case MP_Tangent: ResourceId.Usage = EMaterialShaderMapUsage::MaterialExportTangent; break;
-		case MP_ObjectNormal: ResourceId.Usage = EMaterialShaderMapUsage::MaterialExportObjectNormal; break;
 		case MP_Roughness: ResourceId.Usage = EMaterialShaderMapUsage::MaterialExportRoughness; break;
 		case MP_Anisotropy: ResourceId.Usage = EMaterialShaderMapUsage::MaterialExportAnisotropy; break;
 		case MP_AmbientOcclusion: ResourceId.Usage = EMaterialShaderMapUsage::MaterialExportAO; break;
@@ -382,7 +381,6 @@ public:
 				// Emissive is ALWAYS returned...
 				return MaterialInterface->CompileProperty(&ProxyCompiler, MP_EmissiveColor, ForceCast_Exact_Replicate);
 			case MP_BaseColor:
-			case MP_ObjectNormal:
 				return MaterialInterface->CompileProperty(&ProxyCompiler, PropertyToCompile, ForceCast_Exact_Replicate);
 				break;
 			case MP_Roughness:
@@ -601,7 +599,6 @@ public:
 			case MP_BaseColor:				return true;
 			case MP_Normal:					return true;
 			case MP_Tangent:				return true;
-			case MP_ObjectNormal:			return true;
 			case MP_Roughness:				return true;
 			case MP_Anisotropy:				return true;
 			case MP_AmbientOcclusion:		return true;

@@ -120,7 +120,6 @@ FHLSLMaterialTranslator::FHLSLMaterialTranslator(FMaterial* InMaterial,
 	SharedPixelProperties[MP_Opacity] = true;
 	SharedPixelProperties[MP_OpacityMask] = true;
 	SharedPixelProperties[MP_BaseColor] = true;
-	SharedPixelProperties[MP_ObjectNormal] = true;
 	SharedPixelProperties[MP_Roughness] = true;
 	SharedPixelProperties[MP_Anisotropy] = true;
 	SharedPixelProperties[MP_AmbientOcclusion] = true;
@@ -638,7 +637,6 @@ bool FHLSLMaterialTranslator::Translate()
 		Chunk[MP_DiffuseColor]					= Material->CompilePropertyAndSetMaterialProperty(MP_DiffuseColor			,this);
 		Chunk[MP_SpecularColor]					= Material->CompilePropertyAndSetMaterialProperty(MP_SpecularColor			,this);
 		Chunk[MP_BaseColor]						= Material->CompilePropertyAndSetMaterialProperty(MP_BaseColor				,this);
-		Chunk[MP_ObjectNormal]					= Material->CompilePropertyAndSetMaterialProperty(MP_ObjectNormal			,this);
 		Chunk[MP_Roughness]						= Material->CompilePropertyAndSetMaterialProperty(MP_Roughness				,this);
 		Chunk[MP_Anisotropy]					= Material->CompilePropertyAndSetMaterialProperty(MP_Anisotropy				,this);
 		Chunk[MP_Opacity]						= Material->CompilePropertyAndSetMaterialProperty(MP_Opacity				,this);

@@ -41,7 +41,7 @@ class UPixelInspectorView : public UObject
 	UPROPERTY(VisibleAnywhere, category = GBufferA)
 	FVector Normal;
 
-	/** From the GBufferB B Channel. */
+	/** From the GBufferA A Channel. */
 	UPROPERTY(VisibleAnywhere, category = GBufferA)
 	float Roughness;
 
@@ -57,9 +57,8 @@ class UPixelInspectorView : public UObject
 	UPROPERTY(VisibleAnywhere, category = GBufferC)
 	FLinearColor BaseColor;
 
-	/** From the GBufferA RGB Channels. */
-	UPROPERTY(VisibleAnywhere, category = GBufferB)
-	FVector ObjectNormal;
+	/** From the GBufferB RGB Channels. */
+	
 
 	/** From the GBufferC A Channel encoded with AmbientOcclusion. */
 	UPROPERTY(VisibleAnywhere, category = GBufferC)

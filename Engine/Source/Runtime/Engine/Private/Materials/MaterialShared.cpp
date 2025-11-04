@@ -1512,11 +1512,6 @@ bool FMaterialResource::HasNormalConnected() const
 	return HasMaterialAttributesConnected() || Material->HasNormalConnected();
 }
 
-bool FMaterialResource::HasObjectNormalConnected() const
-{
-	return HasMaterialAttributesConnected() || Material->HasObjectNormalConnected();
-}
-
 bool FMaterialResource::HasRoughnessConnected() const
 {
 	return HasMaterialAttributesConnected() || Material->HasRoughnessConnected();
@@ -4141,7 +4136,6 @@ void FMaterialAttributeDefinitionMap::InitializeAttributeMap()
 
 	// Basic attributes
 	Add(FGuid(0x69B8D336, 0x16ED4D49, 0x9AA49729, 0x2F050F7A), TEXT("BaseColor"),		MP_BaseColor,		MCT_Float3,	FVector4(0,0,0,0),	SF_Pixel);
-	Add(FGuid(0x57C3A161, 0x7F064296, 0xB00B24A5, 0xA496F34C), TEXT("ObjectNormal"),	MP_ObjectNormal,	MCT_Float3,	FVector4(0,0,0,0),	SF_Pixel);
 	Add(FGuid(0xD1DD967C, 0x4CAD47D3, 0x9E6346FB, 0x08ECF210), TEXT("Roughness"),		MP_Roughness,		MCT_Float,	FVector4(.5,0,0,0), SF_Pixel);
 	Add(FGuid(0x55E2B4FB, 0xC1C54DB2, 0x9F11875F, 0x7231EB1E), TEXT("Anisotropy"),		MP_Anisotropy,		MCT_Float,	FVector4(0,0,0,0),  SF_Pixel);
 	Add(FGuid(0xB769B54D, 0xD08D4440, 0xABC21BA6, 0xCD27D0E2), TEXT("EmissiveColor"),	MP_EmissiveColor,	MCT_Float3,	FVector4(0,0,0,0),	SF_Pixel);
@@ -4250,8 +4244,6 @@ FText FMaterialAttributeDefinitionMap::GetAttributeOverrideForMaterial(const FGu
 		return LOCTEXT("SpecularColor", "Specular Color");
 	case MP_BaseColor:
 		return Material->MaterialDomain == MD_Volume ? LOCTEXT("Albedo", "Albedo") : LOCTEXT("BaseColor", "Base Color");
-	case MP_ObjectNormal:
-		return LOCTEXT("ObjectNormal", "ObjectNormal");
 	case MP_Roughness:
 		return LOCTEXT("Roughness", "Roughness");
 	case MP_Anisotropy:

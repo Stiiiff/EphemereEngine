@@ -325,9 +325,6 @@ class UMaterial : public UMaterialInterface
 	FColorMaterialInput BaseColor;
 #endif
 
-	UPROPERTY()
-	FVectorMaterialInput ObjectNormal;
-
 #if WITH_EDITORONLY_DATA
 	UPROPERTY()
 	FScalarMaterialInput Roughness;
@@ -1745,7 +1742,6 @@ public:
 	bool HasAmbientOcclusionConnected() const { check(0); return false; }
 #endif 	
 	bool HasNormalConnected() const { return Normal.IsConnected(); }
-	bool HasObjectNormalConnected() const { return ObjectNormal.IsConnected(); }
 	bool HasEmissiveColorConnected() const { return EmissiveColor.IsConnected(); }
 	bool HasAnisotropyConnected() const { return Anisotropy.IsConnected(); }
 

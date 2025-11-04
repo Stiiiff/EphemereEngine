@@ -240,7 +240,6 @@ void FGLTFMaterialElement::Finalize()
 	TArray<TStrongObjectPtr<UMaterialExpression> > MaterialExpressions;
 	CreateExpressions(MaterialExpressions);
 	ConnectInput(BaseColor, MaterialExpressions, Material->BaseColor);
-	ConnectInput(ObjectNormal, MaterialExpressions, Material->ObjectNormal);
 	ConnectInput(Roughness, MaterialExpressions, Material->Roughness);
 	ConnectInput(EmissiveColor, MaterialExpressions, Material->EmissiveColor);
 	ConnectInput(Opacity, MaterialExpressions, Material->Opacity);

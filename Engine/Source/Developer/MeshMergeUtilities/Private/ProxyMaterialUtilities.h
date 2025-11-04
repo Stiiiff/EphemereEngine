@@ -49,45 +49,30 @@ namespace ProxyMaterialUtilities
 		OutMaterial->SetScalarParameterValueEditorOnly(FMaterialParameterInfo(#a "Const"), Colour.R); \
 	}
 
-	static const bool CalculatePackedTextureData(const FFlattenMaterial& InMaterial, bool& bOutPackObjectNormal, bool& bOutPackRoughness, int32& OutNumSamples, FIntPoint& OutSize)
+	static const bool CalculatePackedTextureData(const FFlattenMaterial& InMaterial,  bool& bOutPackRoughness, int32& OutNumSamples, FIntPoint& OutSize)
 	{
 		// Whether or not a material property is baked down
-		const bool bHasObjectNormal = InMaterial.DoesPropertyContainData(EFlattenMaterialProperties::ObjectNormal) && !InMaterial.IsPropertyConstant(EFlattenMaterialProperties::ObjectNormal);
 		const bool bHasRoughness = InMaterial.DoesPropertyContainData(EFlattenMaterialProperties::Roughness) && !InMaterial.IsPropertyConstant(EFlattenMaterialProperties::Roughness);
 
 		// Check for same texture sizes
 		bool bSameTextureSize = false;
 
 		// Determine whether or not the properties sizes match
-
-
-		const FIntPoint ObjectNormalSize = InMaterial.GetPropertySize(EFlattenMaterialProperties::ObjectNormal);
 		const FIntPoint RoughnessSize = InMaterial.GetPropertySize(EFlattenMaterialProperties::Roughness);
 
-		bSameTextureSize = (ObjectNormalSize == RoughnessSize);
-		if (bSameTextureSize)
-		{
-			OutSize = ObjectNormalSize;
-			OutNumSamples = InMaterial.GetPropertySamples(EFlattenMaterialProperties::ObjectNormal).Num();
-		}
-		else
-		{
-			OutSize = RoughnessSize;
-			OutNumSamples = InMaterial.GetPropertySamples(EFlattenMaterialProperties::Roughness).Num();
-		}
+		OutSize = RoughnessSize;
+		OutNumSamples = InMaterial.GetPropertySamples(EFlattenMaterialProperties::Roughness).Num();
 
 		// Now that we know if the data matches determine whether or not we should pack the properties
 		int32 NumPacked = 0;
 		if (OutNumSamples != 0)
 		{
-			bOutPackObjectNormal = bHasObjectNormal ? (OutNumSamples == InMaterial.GetPropertySamples(EFlattenMaterialProperties::ObjectNormal).Num()) : false;
-			NumPacked += (bOutPackObjectNormal) ? 1 : 0;
 			bOutPackRoughness = bHasRoughness ? (OutNumSamples == InMaterial.GetPropertySamples(EFlattenMaterialProperties::Roughness).Num()) : false;
 			NumPacked += (bOutPackRoughness) ? 1 : 0;
 		}
 		else
 		{
-			bOutPackObjectNormal = bOutPackRoughness  = false;
+			bOutPackRoughness  = false;
 		}
 
 		// Need atleast two properties to pack
@@ -118,10 +103,10 @@ namespace ProxyMaterialUtilities
 			OutMaterial->BasePropertyOverrides.BlendMode = InMaterialProxySettings.BlendMode;
 		}
 
-		bool bPackObjectNormal, bPackRoughness;
+		bool bPackRoughness;
 		int32 NumSamples = 0;
 		FIntPoint PackedSize;
-		const bool bPackTextures = CalculatePackedTextureData(FlattenMaterial, bPackObjectNormal, bPackRoughness, NumSamples, PackedSize);
+		const bool bPackTextures = CalculatePackedTextureData(FlattenMaterial, bPackRoughness, NumSamples, PackedSize);
 
 		const bool bSRGB = true;
 		const bool bRGB = false;
@@ -150,11 +135,6 @@ namespace ProxyMaterialUtilities
 		if (FlattenMaterial.GetPropertySize(EFlattenMaterialProperties::Normal).Num() > 1)
 		{
 			TEXTURE_MACRO_BASE(Normal, TC_Normalmap, bRGB)
-		}
-
-		if (FlattenMaterial.GetPropertySize(EFlattenMaterialProperties::ObjectNormal).Num() > 0 && !(FlattenMaterial.IsPropertyConstant(EFlattenMaterialProperties::ObjectNormal) && FlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::ObjectNormal)[0] == FColor::Black))
-		{
-			TEXTURE_MACRO_VECTOR(ObjectNormal, TC_Default, bRGB);
 		}
 
 		// Determine whether or not specific material properties are packed together into one texture (requires at least two to match (number of samples and texture size) in order to be packed
@@ -188,10 +168,10 @@ namespace ProxyMaterialUtilities
 			MergedTexture.AddZeroed(NumSamples);
 
 			// Merge properties into one texture using the separate colour channels
-			const EFlattenMaterialProperties Properties[3] = { EFlattenMaterialProperties::ObjectNormal , EFlattenMaterialProperties::Roughness };
+			const EFlattenMaterialProperties Properties[3] = { EFlattenMaterialProperties::Roughness };
 
 			//Property that is not part of the pack (because of a different size), will see is reserve pack space fill with Black Color.
-			const bool PropertyShouldBePack[3] = { bPackObjectNormal , bPackRoughness };
+			const bool PropertyShouldBePack[3] = { bPackRoughness };
 
 			// Red mask (all properties are rendered into the red channel)
 			FColor NonAlphaRed = FColor::Red;
@@ -222,11 +202,6 @@ namespace ProxyMaterialUtilities
 
 			// Setup switches for whether or not properties will be packed into one texture
 			FStaticSwitchParameter SwitchParameter;
-			SwitchParameter.ParameterInfo.Name = TEXT("PackObjectNormal");
-			SwitchParameter.Value = bPackObjectNormal;
-			SwitchParameter.bOverride = true;
-			NewStaticParameterSet.StaticSwitchParameters.Add(SwitchParameter);
-
 
 			SwitchParameter.ParameterInfo.Name = TEXT("PackRoughness");
 			SwitchParameter.Value = bPackRoughness;

@@ -440,7 +440,6 @@ public:
 		case MP_BaseColor: ResourceId.Usage = EMaterialShaderMapUsage::MaterialExportBaseColor; break;
 		case MP_Normal: ResourceId.Usage = EMaterialShaderMapUsage::MaterialExportNormal; break;
 		case MP_Tangent: ResourceId.Usage = EMaterialShaderMapUsage::MaterialExportTangent; break;
-		case MP_ObjectNormal : ResourceId.Usage = EMaterialShaderMapUsage::MaterialExportObjectNormal; break;
 		case MP_Roughness: ResourceId.Usage = EMaterialShaderMapUsage::MaterialExportRoughness; break;
 		case MP_Anisotropy: ResourceId.Usage = EMaterialShaderMapUsage::MaterialExportAnisotropy; break;
 		case MP_AmbientOcclusion: ResourceId.Usage = EMaterialShaderMapUsage::MaterialExportAO; break;
@@ -547,7 +546,6 @@ public:
 				// Emissive is ALWAYS returned...
 				return MaterialInterface->CompileProperty(&ProxyCompiler, MP_EmissiveColor, ForceCast_Exact_Replicate);
 			case MP_BaseColor:
-			case MP_ObjectNormal:
 				// Only return for Opaque and Masked...
 				if (BlendMode == BLEND_Opaque || BlendMode == BLEND_Masked)
 				{
@@ -755,7 +753,6 @@ public:
 				case MP_BaseColor:			return true;
 				case MP_Normal:				return true;
 				case MP_Tangent:			return true;
-				case MP_ObjectNormal:		return true;
 				case MP_Roughness:			return true;
 				case MP_Anisotropy:			return true;
 				case MP_AmbientOcclusion:	return true;
@@ -998,17 +995,6 @@ bool FMaterialUtilities::ExportLandscapeMaterial(ALandscapeProxy* InLandscape, c
 			NormalSize, NormalColorGamma, NormalSamples);
 	}
 
-	// Render ObjectNormal map using BufferVisualizationMode=ObjectNormal
-	if (OutFlattenMaterial.ShouldGenerateDataForProperty(EFlattenMaterialProperties::ObjectNormal))
-	{
-		static const FName ObjectNormalName("ObjectNormal");
-		const float ObjectNormalColorGamma = 1.0f; // Dump ObjectNormal texture in linear space
-		const FIntPoint& ObjectNormalSize = OutFlattenMaterial.GetPropertySize(EFlattenMaterialProperties::ObjectNormal);
-		TArray<FColor>& ObjectNormalSamples = OutFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::ObjectNormal);
-		RenderSceneToTexture(Scene, ObjectNormalName, ViewOrigin, ViewRotationMatrix, ProjectionMatrix, HiddenPrimitives, 
-			ObjectNormalSize, ObjectNormalColorGamma, ObjectNormalSamples);
-	}
-
 	// Render roughness map using BufferVisualizationMode=Roughness
 	if (OutFlattenMaterial.ShouldGenerateDataForProperty(EFlattenMaterialProperties::Roughness))
 	{
@@ -1092,11 +1078,10 @@ UMaterial* FMaterialUtilities::CreateMaterial(const FFlattenMaterial& InFlattenM
 
 
 	// Whether or not a material property is baked down
-	const bool bHasObjectNormal = InFlattenMaterial.DoesPropertyContainData(EFlattenMaterialProperties::ObjectNormal) && !InFlattenMaterial.IsPropertyConstant(EFlattenMaterialProperties::ObjectNormal);
 	const bool bHasRoughness = InFlattenMaterial.DoesPropertyContainData(EFlattenMaterialProperties::Roughness) && !InFlattenMaterial.IsPropertyConstant(EFlattenMaterialProperties::Roughness);
 
 	// Number of material properties baked down to textures
-	const int BakedMaterialPropertyCount = bHasObjectNormal + bHasRoughness;
+	const int BakedMaterialPropertyCount = bHasRoughness;
 
 	// Check for same texture sizes
 	bool bSameTextureSize = true;	
@@ -1105,13 +1090,12 @@ UMaterial* FMaterialUtilities::CreateMaterial(const FFlattenMaterial& InFlattenM
 	FIntPoint MergedSize(0,0);
 	for (int32 PropertyIndex = 0; PropertyIndex < 3; ++PropertyIndex)
 	{
-		EFlattenMaterialProperties Property = (EFlattenMaterialProperties)(PropertyIndex + (int32)EFlattenMaterialProperties::ObjectNormal);
+		EFlattenMaterialProperties Property = (EFlattenMaterialProperties)(PropertyIndex + (int32)EFlattenMaterialProperties::Roughness);
 		const bool HasProperty = InFlattenMaterial.DoesPropertyContainData(Property) && !InFlattenMaterial.IsPropertyConstant(Property);
 		FIntPoint PropertySize = InFlattenMaterial.GetPropertySize(Property);
-		SampleCount = (bHasObjectNormal && SampleCount == 0) ? InFlattenMaterial.GetPropertySamples(Property).Num() : SampleCount;
-		MergedSize = (bHasObjectNormal && MergedSize.X == 0) ? PropertySize : MergedSize;
+		SampleCount = SampleCount == 0 ? InFlattenMaterial.GetPropertySamples(Property).Num() : SampleCount;
+		MergedSize = MergedSize.X == 0 ? PropertySize : MergedSize;
 	}
-	bSameTextureSize &= bHasObjectNormal ? (SampleCount == InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::ObjectNormal).Num()) : true;
 	bSameTextureSize &= bHasRoughness ? (SampleCount == InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::Roughness).Num()) : true;
 
 	// Merge values into one texture if more than one material property exists
@@ -1123,13 +1107,13 @@ UMaterial* FMaterialUtilities::CreateMaterial(const FFlattenMaterial& InFlattenM
 		
 		// R G B masks
 #if PLATFORM_LITTLE_ENDIAN
-		const uint32 ColorMask[4] = { 0x0000FF00, 0x00FF0000, 0xFF000000, 0x000000FF };
+		const uint32 ColorMask[3] = { 0x0000FF00, 0x00FF0000, 0xFF000000 };
 #else // PLATFORM_LITTLE_ENDIAN
-		const uint32 ColorMask[4] = { 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000 };
+		const uint32 ColorMask[3] = { 0x00FF0000, 0x0000FF00, 0x000000FF };
 #endif
 		for (int32 PropertyIndex = 0; PropertyIndex < 3; ++PropertyIndex)
 		{
-			EFlattenMaterialProperties Property = (EFlattenMaterialProperties)(PropertyIndex + (int32)EFlattenMaterialProperties::ObjectNormal);
+			EFlattenMaterialProperties Property = (EFlattenMaterialProperties)(PropertyIndex + (int32)EFlattenMaterialProperties::Roughness);
 			const bool HasProperty = InFlattenMaterial.DoesPropertyContainData(Property) && !InFlattenMaterial.IsPropertyConstant(Property);
 
 			if (HasProperty)
@@ -1155,16 +1139,6 @@ UMaterial* FMaterialUtilities::CreateMaterial(const FFlattenMaterial& InFlattenM
 		MergedExpression->MaterialExpressionEditorY = MaterialNodeY;
 		Material->Expressions.Add(MergedExpression);
 
-		// ObjectNormal
-		if (bHasObjectNormal)
-		{
-			Material->ObjectNormal.Expression = MergedExpression;
-			Material->ObjectNormal.Mask = Material->ObjectNormal.Expression->GetOutputs()[0].Mask;
-			Material->ObjectNormal.MaskR = 1;
-			Material->ObjectNormal.MaskG = 1;
-			Material->ObjectNormal.MaskB = 1;
-			Material->ObjectNormal.MaskA = 0;
-		}
 
 		// Roughness
 		if (bHasRoughness)
@@ -1172,33 +1146,15 @@ UMaterial* FMaterialUtilities::CreateMaterial(const FFlattenMaterial& InFlattenM
 			Material->Roughness.Expression = MergedExpression;
 			Material->Roughness.Mask = Material->Roughness.Expression->GetOutputs()[0].Mask;
 			Material->Roughness.MaskR = 0;
-			Material->Roughness.MaskG = 0;
+			Material->Roughness.MaskG = 1;
 			Material->Roughness.MaskB = 0;
-			Material->Roughness.MaskA = 1;
+			Material->Roughness.MaskA = 0;
 		}
 
 		MaterialNodeY += MaterialNodeStepY;
 	}
 	else
 	{
-		// ObjectNormal
-		if (bHasObjectNormal)
-		{
-			const FString AssetName = TEXT("T_") + AssetBaseName + TEXT("_M");
-			const bool bSRGB = true;
-			UTexture2D* Texture = CreateTexture(InOuter, AssetBasePath / AssetName, InFlattenMaterial.GetPropertySize(EFlattenMaterialProperties::ObjectNormal), InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::ObjectNormal), TC_Default, InTextureGroup, Flags, bSRGB);
-			OutGeneratedAssets.Add(Texture);
-
-			auto ObjectNormalExpression = NewObject<UMaterialExpressionTextureSample>(Material);
-			ObjectNormalExpression->Texture = Texture;
-			ObjectNormalExpression->SamplerType = EMaterialSamplerType::SAMPLERTYPE_Color;
-			ObjectNormalExpression->MaterialExpressionEditorX = -400;
-			ObjectNormalExpression->MaterialExpressionEditorY = MaterialNodeY;
-			Material->Expressions.Add(ObjectNormalExpression);
-			Material->ObjectNormal.Expression = ObjectNormalExpression;
-
-			MaterialNodeY += MaterialNodeStepY;
-		}
 
 		// Roughness
 		if (bHasRoughness && MaterialProxySettings.bRoughnessMap)
@@ -1218,18 +1174,6 @@ UMaterial* FMaterialUtilities::CreateMaterial(const FFlattenMaterial& InFlattenM
 
 			MaterialNodeY += MaterialNodeStepY;
 		}
-	}
-
-	if (InFlattenMaterial.IsPropertyConstant(EFlattenMaterialProperties::ObjectNormal))
-	{
-		auto ObjectNormalExpression = NewObject<UMaterialExpressionConstant>(Material);
-		ObjectNormalExpression->R = FLinearColor(InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::ObjectNormal)[0]).R;
-		ObjectNormalExpression->MaterialExpressionEditorX = -400;
-		ObjectNormalExpression->MaterialExpressionEditorY = MaterialNodeY;
-		Material->Expressions.Add(ObjectNormalExpression);
-		Material->ObjectNormal.Expression = ObjectNormalExpression;
-
-		MaterialNodeY += MaterialNodeStepY;
 	}
 	
 	if (InFlattenMaterial.IsPropertyConstant(EFlattenMaterialProperties::Roughness) || !MaterialProxySettings.bRoughnessMap)
@@ -1504,7 +1448,6 @@ FFlattenMaterial FMaterialUtilities::CreateFlattenMaterialWithSettings(const FMa
 	if (InMaterialLODSettings.TextureSizingType == TextureSizingType_UseManualOverrideTextureSize)
 	{
 		MaximumSize = (MaximumSize.X < InMaterialLODSettings.DiffuseTextureSize.X) ? InMaterialLODSettings.DiffuseTextureSize : MaximumSize ;
-		MaximumSize = (MaximumSize.X < InMaterialLODSettings.ObjectNormalTextureSize.X) ? InMaterialLODSettings.ObjectNormalTextureSize	:	MaximumSize;
 		MaximumSize = (InMaterialLODSettings.bRoughnessMap && (MaximumSize.X < InMaterialLODSettings.RoughnessTextureSize.X)) ? InMaterialLODSettings.RoughnessTextureSize :	MaximumSize;
 		MaximumSize = (InMaterialLODSettings.bNormalMap && (MaximumSize.X < InMaterialLODSettings.NormalTextureSize.X)) ? InMaterialLODSettings.NormalTextureSize :			MaximumSize;
 		MaximumSize = (InMaterialLODSettings.bEmissiveMap && (MaximumSize.X < InMaterialLODSettings.EmissiveTextureSize.X)) ? InMaterialLODSettings.EmissiveTextureSize :	MaximumSize;
@@ -1516,7 +1459,6 @@ FFlattenMaterial FMaterialUtilities::CreateFlattenMaterialWithSettings(const FMa
 		Material.RenderSize = MaximumSize;
 
 		Material.SetPropertySize(EFlattenMaterialProperties::Diffuse, InMaterialLODSettings.DiffuseTextureSize);
-		Material.SetPropertySize(EFlattenMaterialProperties::ObjectNormal, InMaterialLODSettings.ObjectNormalTextureSize);
 		Material.SetPropertySize(EFlattenMaterialProperties::Roughness, InMaterialLODSettings.bRoughnessMap ? InMaterialLODSettings.RoughnessTextureSize : FIntPoint::ZeroValue);
 		Material.SetPropertySize(EFlattenMaterialProperties::Normal, InMaterialLODSettings.bNormalMap ? InMaterialLODSettings.NormalTextureSize : FIntPoint::ZeroValue);
 		Material.SetPropertySize(EFlattenMaterialProperties::Emissive, InMaterialLODSettings.bEmissiveMap ? InMaterialLODSettings.EmissiveTextureSize : FIntPoint::ZeroValue);
@@ -1535,7 +1477,6 @@ FFlattenMaterial FMaterialUtilities::CreateFlattenMaterialWithSettings(const FMa
 		Material.SetPropertySize(EFlattenMaterialProperties::Normal, (InMaterialLODSettings.bNormalMap) ? FIntPoint(NormalSizeX, NormalSizeX) : FIntPoint::ZeroValue);
 
 		FIntPoint PropertiesSize = FIntPoint(PropertiesSizeX, PropertiesSizeX);
-		Material.SetPropertySize(EFlattenMaterialProperties::ObjectNormal, PropertiesSize);
 		Material.SetPropertySize(EFlattenMaterialProperties::Roughness, (InMaterialLODSettings.bRoughnessMap) ? PropertiesSize : FIntPoint::ZeroValue );
 		Material.SetPropertySize(EFlattenMaterialProperties::Emissive, (InMaterialLODSettings.bEmissiveMap) ? PropertiesSize : FIntPoint::ZeroValue );
 		Material.SetPropertySize(EFlattenMaterialProperties::Opacity, (InMaterialLODSettings.bOpacityMap) ? PropertiesSize : FIntPoint::ZeroValue );
@@ -1544,7 +1485,6 @@ FFlattenMaterial FMaterialUtilities::CreateFlattenMaterialWithSettings(const FMa
 	{
 		Material.RenderSize = InMaterialLODSettings.TextureSize;
 		Material.SetPropertySize(EFlattenMaterialProperties::Diffuse, InMaterialLODSettings.TextureSize);
-		Material.SetPropertySize(EFlattenMaterialProperties::ObjectNormal, InMaterialLODSettings.TextureSize);
 		Material.SetPropertySize(EFlattenMaterialProperties::Roughness, (InMaterialLODSettings.bRoughnessMap) ? InMaterialLODSettings.TextureSize : FIntPoint::ZeroValue);
 		Material.SetPropertySize(EFlattenMaterialProperties::Normal, (InMaterialLODSettings.bNormalMap) ? InMaterialLODSettings.TextureSize : FIntPoint::ZeroValue);
 		Material.SetPropertySize(EFlattenMaterialProperties::Emissive, (InMaterialLODSettings.bEmissiveMap) ? InMaterialLODSettings.TextureSize : FIntPoint::ZeroValue);
@@ -1563,7 +1503,6 @@ void FMaterialUtilities::AnalyzeMaterial(UMaterialInterface* InMaterial, const s
 	PropertyBeingBaked[MP_BaseColor] = true;
 	PropertyBeingBaked[MP_Roughness] = InMaterialSettings.bRoughnessMap;
 	PropertyBeingBaked[MP_Anisotropy] = InMaterialSettings.bAnisotropyMap;
-	PropertyBeingBaked[MP_ObjectNormal] = true;
 	PropertyBeingBaked[MP_Normal] = InMaterialSettings.bNormalMap;
 	PropertyBeingBaked[MP_Tangent] = InMaterialSettings.bTangentMap;
 	PropertyBeingBaked[MP_Opacity] = InMaterialSettings.bOpacityMap;
@@ -1803,15 +1742,6 @@ void FMaterialUtilities::ResizeFlattenMaterial(FFlattenMaterial& InFlattenMateri
 			InFlattenMaterial.SetPropertySize(EFlattenMaterialProperties::Diffuse, FIntPoint(DiffuseSizeX, DiffuseSizeX));
 		}
 
-		if (InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::ObjectNormal).Num() && InFlattenMaterial.GetPropertySize(EFlattenMaterialProperties::ObjectNormal).X != PropertiesSizeX)
-		{
-			TArray<FColor> NewSamples;
-			FImageUtils::ImageResize(InFlattenMaterial.GetPropertySize(EFlattenMaterialProperties::ObjectNormal).X, InFlattenMaterial.GetPropertySize(EFlattenMaterialProperties::ObjectNormal).Y, InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::ObjectNormal), PropertiesSizeX, PropertiesSizeX, NewSamples, false);
-			InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::ObjectNormal).Reset(NewSamples.Num());
-			InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::ObjectNormal).Append(NewSamples);
-			InFlattenMaterial.SetPropertySize(EFlattenMaterialProperties::ObjectNormal, FIntPoint(PropertiesSizeX, PropertiesSizeX));
-		}
-
 		if (InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::Roughness).Num() && MaterialSettings.bRoughnessMap && InFlattenMaterial.GetPropertySize(EFlattenMaterialProperties::Roughness).X != PropertiesSizeX)
 		{
 			TArray<FColor> NewSamples;
@@ -1857,15 +1787,6 @@ void FMaterialUtilities::ResizeFlattenMaterial(FFlattenMaterial& InFlattenMateri
 			InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::Diffuse).Reset(NewSamples.Num());
 			InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::Diffuse).Append(NewSamples);
 			InFlattenMaterial.SetPropertySize(EFlattenMaterialProperties::Diffuse, MaterialSettings.DiffuseTextureSize);
-		}
-
-		if (InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::ObjectNormal).Num() && InFlattenMaterial.GetPropertySize(EFlattenMaterialProperties::ObjectNormal) != MaterialSettings.ObjectNormalTextureSize)
-		{
-			TArray<FColor> NewSamples;
-			FImageUtils::ImageResize(InFlattenMaterial.GetPropertySize(EFlattenMaterialProperties::ObjectNormal).X, InFlattenMaterial.GetPropertySize(EFlattenMaterialProperties::ObjectNormal).Y, InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::ObjectNormal), MaterialSettings.ObjectNormalTextureSize.X, MaterialSettings.ObjectNormalTextureSize.Y, NewSamples, false);
-			InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::ObjectNormal).Reset(NewSamples.Num());
-			InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::ObjectNormal).Append(NewSamples);
-			InFlattenMaterial.SetPropertySize(EFlattenMaterialProperties::ObjectNormal, MaterialSettings.ObjectNormalTextureSize);
 		}
 
 		if (InFlattenMaterial.GetPropertySamples(EFlattenMaterialProperties::Roughness).Num() && MaterialSettings.bRoughnessMap && InFlattenMaterial.GetPropertySize(EFlattenMaterialProperties::Roughness) != MaterialSettings.RoughnessTextureSize)
@@ -2328,14 +2249,6 @@ bool FMaterialUtilities::ExportMaterials(TArray<FMaterialMergeData*>& MergeData,
 			const FIntPoint& DataSize = Output.PropertySizes.FindChecked(MP_BaseColor);
 			FlattenMaterial->GetPropertySamples(EFlattenMaterialProperties::Diffuse) = ColorData;
 			FlattenMaterial->SetPropertySize(EFlattenMaterialProperties::Diffuse, DataSize);
-		}
-
-		if (Output.PropertyData.Contains(MP_ObjectNormal))
-		{
-			const TArray<FColor>& ColorData = Output.PropertyData.FindChecked(MP_ObjectNormal);
-			const FIntPoint& DataSize = Output.PropertySizes.FindChecked(MP_ObjectNormal);
-			FlattenMaterial->GetPropertySamples(EFlattenMaterialProperties::ObjectNormal) = ColorData;
-			FlattenMaterial->SetPropertySize(EFlattenMaterialProperties::ObjectNormal, DataSize);
 		}
 
 		if (Output.PropertyData.Contains(MP_Roughness))

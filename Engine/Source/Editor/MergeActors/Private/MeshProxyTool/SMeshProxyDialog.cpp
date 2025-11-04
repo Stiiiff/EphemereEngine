@@ -475,22 +475,6 @@ void  SThirdPartyMeshProxyDialog::CreateLayout()
 				[
 					SNew(SCheckBox)
 					.Type(ESlateCheckBoxType::CheckBox)
-					.IsChecked(this, &SThirdPartyMeshProxyDialog::GetExportObjectNormalMap)
-					.OnCheckStateChanged(this, &SThirdPartyMeshProxyDialog::SetExportObjectNormalMap)
-					.Content()
-					[
-						SNew(STextBlock)
-						.Text(LOCTEXT("ExportMetallicMapLabel", "Export Metallic Map"))
-						.Font(FEditorStyle::GetFontStyle("StandardDialog.SmallFont"))
-					]
-				]
-
-				+SVerticalBox::Slot()
-				.AutoHeight()
-				.Padding(FEditorStyle::GetMargin("StandardDialog.ContentPadding"))
-				[
-					SNew(SCheckBox)
-					.Type(ESlateCheckBoxType::CheckBox)
 					.IsChecked(this, &SThirdPartyMeshProxyDialog::GetExportRoughnessMap)
 					.OnCheckStateChanged(this, &SThirdPartyMeshProxyDialog::SetExportRoughnessMap)
 					.Content()
@@ -609,16 +593,6 @@ ECheckBoxState SThirdPartyMeshProxyDialog::GetExportNormalMap() const
 void SThirdPartyMeshProxyDialog::SetExportNormalMap(ECheckBoxState NewValue)
 {
 	Tool->ProxySettings.MaterialSettings.bNormalMap = (NewValue == ECheckBoxState::Checked);
-}
-
-ECheckBoxState SThirdPartyMeshProxyDialog::GetExportObjectNormalMap() const
-{
-	return Tool->ProxySettings.MaterialSettings.bObjectNormalMap ? ECheckBoxState::Checked :  ECheckBoxState::Unchecked;
-}
-
-void SThirdPartyMeshProxyDialog::SetExportObjectNormalMap(ECheckBoxState NewValue)
-{
-	Tool->ProxySettings.MaterialSettings.bObjectNormalMap = (NewValue == ECheckBoxState::Checked);
 }
 
 ECheckBoxState SThirdPartyMeshProxyDialog::GetExportRoughnessMap() const

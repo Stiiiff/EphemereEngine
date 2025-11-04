@@ -231,9 +231,6 @@ struct FMeshProxySettings
 	uint8 bExportNormalMap_DEPRECATED:1;
 
 	UPROPERTY()
-	uint8 bExportObjectNormalMap_DEPRECATED : 1;
-
-	UPROPERTY()
 	uint8 bExportRoughnessMap_DEPRECATED:1;
 
 	UPROPERTY()
@@ -328,7 +325,6 @@ struct FMeshProxySettings
 		, TextureWidth_DEPRECATED(512)
 		, TextureHeight_DEPRECATED(512)
 		, bExportNormalMap_DEPRECATED(true)
-		, bExportObjectNormalMap_DEPRECATED(false)
 		, bExportRoughnessMap_DEPRECATED(false)
 		, bBakeVertexData_DEPRECATED(false)
 #endif
@@ -511,9 +507,6 @@ struct FMeshMergingSettings
 	/** Whether to export normal maps for material merging */
 	UPROPERTY()
 	uint8 bExportNormalMap_DEPRECATED:1;
-	/** Whether to export ObjectNormal maps for material merging */
-	UPROPERTY()
-	uint8 bExportObjectNormalMap_DEPRECATED:1;
 	/** Whether to export roughness maps for material merging */
 	UPROPERTY()
 	uint8 bExportRoughnessMap_DEPRECATED:1;
@@ -553,7 +546,6 @@ struct FMeshMergingSettings
 		, bImportVertexColors_DEPRECATED(false)
 		, bCalculateCorrectLODModel_DEPRECATED(false)
 		, bExportNormalMap_DEPRECATED(true)
-		, bExportObjectNormalMap_DEPRECATED(false)
 		, bExportRoughnessMap_DEPRECATED(false)
 		, bExportSpecularMap_DEPRECATED(false)
 		, MergedMaterialAtlasResolution_DEPRECATED(1024)

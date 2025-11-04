@@ -38,7 +38,6 @@ void UMaterialGraph::RebuildGraph()
 
 		// Initialize the material input list.
 		MaterialInputs.Add( FMaterialInputInfo(FMaterialAttributeDefinitionMap::GetDisplayNameForMaterial(MP_BaseColor, Material), MP_BaseColor, LOCTEXT( "BaseColorToolTip", "Defines the overall color of the Material. Each channel is automatically clamped between 0 and 1" ) ) );
-		MaterialInputs.Add( FMaterialInputInfo(FMaterialAttributeDefinitionMap::GetDisplayNameForMaterial(MP_ObjectNormal , Material), MP_ObjectNormal, LOCTEXT("ObjectNormalToolTip", "Controls how the lighting interact with the surface")));
 		MaterialInputs.Add( FMaterialInputInfo(FMaterialAttributeDefinitionMap::GetDisplayNameForMaterial(MP_Roughness, Material), MP_Roughness, LOCTEXT("RoughnessToolTip", "Controls how rough the Material is. Roughness of 0 (smooth) is a mirror reflection and 1 (rough) is completely matte or diffuse") ) );
 		MaterialInputs.Add( FMaterialInputInfo(FMaterialAttributeDefinitionMap::GetDisplayNameForMaterial(MP_Anisotropy, Material), MP_Anisotropy, LOCTEXT("AnisotropyToolTip", "Determines the extent the specular highlight is stretched along the tangent. Anisotropy from 0 to 1 results in a specular highlight that stretches from uniform to maximally stretched along the tangent direction.")));
 		MaterialInputs.Add( FMaterialInputInfo(FMaterialAttributeDefinitionMap::GetDisplayNameForMaterial(MP_EmissiveColor, Material), MP_EmissiveColor, LOCTEXT( "EmissiveToolTip", "Controls which parts of your Material will appear to glow" ) ) );

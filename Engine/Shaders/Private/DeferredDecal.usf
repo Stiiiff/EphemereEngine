@@ -278,7 +278,6 @@ void FPixelShaderInOut_MainPS(inout FPixelShaderIn In, inout FPixelShaderOut Out
 
 	// Store the results in local variables and reuse instead of calling the functions multiple times.
 	half3 BaseColor = GetMaterialBaseColor(PixelMaterialInputs);
-	half3 ObjectNormal = GetMaterialObjectNormal(MaterialParameters, PixelMaterialInputs);	
 	half  Metallic = 0;
 
 #if MATERIAL_SHADINGMODEL_METAL

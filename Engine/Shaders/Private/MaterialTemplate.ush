@@ -1974,16 +1974,6 @@ half3 GetMaterialBaseColor(FPixelMaterialInputs PixelMaterialInputs)
 	return saturate(GetMaterialBaseColorRaw(PixelMaterialInputs));
 }
 
-half3 GetMaterialObjectNormalRaw(FPixelMaterialInputs PixelMaterialInputs)
-{
-	return (PixelMaterialInputs.ObjectNormal - 0.5) * 2;
-}
-
-half3 GetMaterialObjectNormal(FMaterialPixelParameters MaterialParameter, FPixelMaterialInputs PixelMaterialInputs)
-{
-	return GetMaterialObjectNormalRaw(PixelMaterialInputs);
-}
-
 half GetMaterialRoughnessRaw(FPixelMaterialInputs PixelMaterialInputs)
 {
 	return PixelMaterialInputs.Roughness;
