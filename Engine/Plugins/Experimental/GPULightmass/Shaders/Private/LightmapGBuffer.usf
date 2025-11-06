@@ -83,10 +83,6 @@ void LightmapGBufferPS(
 	OutWorldNormal *= GetPrimitiveData(MaterialParameters.PrimitiveId).InvNonUniformScaleAndDeterminantSign.w;
 #if 0 // Normal with shader effects (e.g. normal maps). Can bring high frequency artifacts into lightmaps
 	float4 OutShadingNormal = float4(normalize(MaterialParameters.WorldNormal), 0.0f);
-	#if MATERIAL_TANGENTSPACENORMAL
-		// Revert the normal flipping done by CalcPixelMaterialInputs
-		OutShadingNormal *= MaterialParameters.TwoSidedSign;
-	#endif
 #else // Interpolated vertex normal
 	float4 OutShadingNormal = float4(TransformTangentNormalToWorld(MaterialParameters.TangentToWorld, float3(0, 0, 1)), 0.0f);
 #endif

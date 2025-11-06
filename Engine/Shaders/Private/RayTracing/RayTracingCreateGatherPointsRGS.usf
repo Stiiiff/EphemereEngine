@@ -147,12 +147,6 @@ RAY_TRACING_ENTRY_RAYGEN(RayTracingCreateGatherPointsTraceRGS)
 	FGBufferData GBufferData = GetGBufferDataFromSceneTexturesLoad(PixelCoord);
 #endif
 
-	// Remap DiffuseColor when using SubsurfaceProfile (GBuffer decoding replaces with 100% albedo)
-	if (UseSubsurfaceProfile(GBufferData.ShadingModelID))
-	{
-		GBufferData.DiffuseColor = GBufferData.StoredBaseColor;
-	}
-
 	// Get sample-center's normal for sample generation
 	uint2 SampleCenterCoord = PixelCoord - (PixelCoord % GatherFilterWidth) + (GatherFilterWidth / 2);
 	FGBufferData SampleCenterGBufferData = GetGBufferDataFromSceneTexturesLoad(SampleCenterCoord);
@@ -260,12 +254,6 @@ RAY_TRACING_ENTRY_RAYGEN(RayTracingCreateGatherPointsRGS)
 	//#dxr-todo: workaround for flickering. UE-87281
 	FGBufferData GBufferData = GetGBufferDataFromSceneTexturesLoad(PixelCoord);
 #endif
-
-	// Remap DiffuseColor when using SubsurfaceProfile (GBuffer decoding replaces with 100% albedo)
-	if (UseSubsurfaceProfile(GBufferData.ShadingModelID))
-	{
-		GBufferData.DiffuseColor = GBufferData.StoredBaseColor;
-	}
 
 	// Construct position, normal, and view direction
 	float DeviceZ = SceneDepthTexture.Load(int3(PixelCoord, 0)).r;

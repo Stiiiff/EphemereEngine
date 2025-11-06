@@ -44,13 +44,6 @@ RAY_TRACING_ENTRY_RAYGEN(SkyLightRGS)
 	float3 WorldNormal = GBufferData.WorldNormal;
 	float3 Albedo = GBufferData.DiffuseColor;
 
-	// Recalculate DiffuseColor if subsurface reverted the contribution within the G-Buffer
-	if (UseSubsurfaceProfile(GBufferData.ShadingModelID))
-	{
-		Albedo = GBufferData.StoredBaseColor - GBufferData.StoredBaseColor * GBufferData.Metallic;
-		GBufferData.DiffuseColor = Albedo;
-	}
-
 	// Mask out depth values that are infinitely far away
 	bool IsFiniteDepth = DeviceZ > 0.0;
 	bool bTraceRay = (
