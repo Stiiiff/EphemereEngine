@@ -1901,22 +1901,10 @@ float3 DecodeSceneColorForMaterialNode(float2 ScreenUV)
 // Uniform material expressions.
 %s
 
-<<<<<<< HEAD
-// in World space
-half3 GetMaterialNormalRaw(FMaterialPixelParameters MaterialParameter, FPixelMaterialInputs PixelMaterialInputs)
-{	
-	return MaterialParameter.TangentToWorld[2];
-
-=======
 // in tangent space
 half3 GetMaterialNormalRaw(FMaterialPixelParameters MaterialParameter, FPixelMaterialInputs PixelMaterialInputs)
 {	
-	MaterialFloat3 ObjectNormal = (PixelMaterialInputs.Normal - 0.5) * 2;
-	ObjectNormal = normalize(ObjectNormal);
-	float3 ObjectNormalToWorld = TransformLocalVectorToWorld(MaterialParameter, ObjectNormal);
-	
-	return ObjectNormalToWorld;
->>>>>>> origin/feature/GBufferWSN
+	return PixelMaterialInputs.Normal;
 }
 
 half3 GetMaterialNormal(FMaterialPixelParameters Parameters, FPixelMaterialInputs PixelMaterialInputs)
@@ -1924,8 +1912,6 @@ half3 GetMaterialNormal(FMaterialPixelParameters Parameters, FPixelMaterialInput
 	half3 RetNormal;
 
 	RetNormal = GetMaterialNormalRaw(Parameters, PixelMaterialInputs);
-<<<<<<< HEAD
-=======
 	
 	#if (USE_EDITOR_SHADERS)
 	{
@@ -1937,8 +1923,6 @@ half3 GetMaterialNormal(FMaterialPixelParameters Parameters, FPixelMaterialInput
 		RetNormal = RetNormal * ResolvedView.NormalOverrideParameter.w + OverrideNormal;
 	}
 	#endif
->>>>>>> origin/feature/GBufferWSN
-
 	return RetNormal;
 }
 
