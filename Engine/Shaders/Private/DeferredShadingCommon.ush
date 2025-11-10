@@ -321,6 +321,15 @@ float2 Decode44(float EncodValue)
 	return Scalar;
 }
 
+float3 PackBuffers(float Buffer01, float Buffer02, float Buffer03, out float3 BufferMix)
+{
+	BufferMix.r = Buffer01;
+	BufferMix.g = Buffer02;
+	BufferMix.b = Buffer03;
+	
+	return BufferMix;
+}
+
 float EncodeShadingModelIdAndSelectiveOutputMask(uint ShadingModelId, uint SelectiveOutputMask)
 {
 	uint Value = (ShadingModelId & SHADINGMODELID_MASK) | SelectiveOutputMask;
@@ -397,6 +406,10 @@ struct FGBufferData
 	uint SelectiveOutputMask;
 	// 0..1, 2 bits, use CastContactShadow(GBuffer) or HasDynamicIndirectShadowCasterRepresentation(GBuffer) to extract
 	float PerObjectGBufferData;
+	// 0..1 shading gradient shape
+	float ShadingShape;
+	// 0..1 outline
+	float Outline;
 	// in world units
 	float CustomDepth;
 	// Custom depth stencil value
@@ -450,6 +463,8 @@ void EncodeGBuffer(
 	float QuantizationBias = 0		// -0.5 to 0.5 random float. Used to bias quantization.
 	)
 {
+	float3 BufferMix;
+	
 	if (GBuffer.ShadingModelID == SHADINGMODELID_UNLIT)
 	{
 		OutGBufferA = 0;
@@ -463,7 +478,7 @@ void EncodeGBuffer(
 		OutGBufferA.rgb = EncodeNormal( GBuffer.WorldNormal );
 		OutGBufferA.a = GBuffer.Roughness;
 
-		OutGBufferB.rgb = 0; // Empty for now, we keep it in case we need to implement a new GBuffer later on.
+		OutGBufferB.rgb = PackBuffers(GBuffer.ShadingShape, GBuffer.Outline, GBuffer.PerObjectGBufferData, BufferMix); // Store Shading and outline data into the GBuffer
 		OutGBufferB.a = EncodeShadingModelIdAndSelectiveOutputMask(GBuffer.ShadingModelID, GBuffer.SelectiveOutputMask);
 
 		OutGBufferC.rgb = EncodeBaseColor( GBuffer.BaseColor );
@@ -475,7 +490,7 @@ void EncodeGBuffer(
 		OutGBufferC.a = GBuffer.GBufferAO;
 #endif
 
-		OutGBufferD = float4(GBuffer.CustomData.rgb, Encode44(GBuffer.CustomData.a, GBuffer.PerObjectGBufferData));
+		OutGBufferD = GBuffer.CustomData;
 		OutGBufferE = GBuffer.PrecomputedShadowFactors;
 	}
 
@@ -563,6 +578,12 @@ FGBufferData DecodeGBufferData(
 	}
 
 	GBuffer.Roughness = InGBufferA.a;
+	
+	GBuffer.ShadingShape = InGBufferB.r;
+	GBuffer.Outline = InGBufferB.g;
+	GBuffer.PerObjectGBufferData = InGBufferB.b;
+	
+	
 	// Note: must match GetShadingModelId standalone function logic
 	// Also Note: SimpleElementPixelShader directly sets SV_Target2 ( GBufferB ) to indicate unlit.
 	// An update there will be required if this layout changes.
@@ -578,9 +599,7 @@ FGBufferData DecodeGBufferData(
 	GBuffer.IndirectIrradiance = 1;
 #endif
 
-	float2 GBufferDAlpha = Decode44(InGBufferD.a);
-	GBuffer.PerObjectGBufferData = GBufferDAlpha.g;
-	GBuffer.CustomData = HasCustomGBufferData(GBuffer.ShadingModelID) ? float4(InGBufferD.rgb, GBufferDAlpha.r) : 0;
+	GBuffer.CustomData = InGBufferD;
 
 	GBuffer.PrecomputedShadowFactors = !(GBuffer.SelectiveOutputMask & SKIP_PRECSHADOW_MASK) ? InGBufferE :  ((GBuffer.SelectiveOutputMask & ZERO_PRECSHADOW_MASK) ? 0 :  1);
 	GBuffer.CustomDepth = ConvertFromDeviceZ(CustomNativeDepth);

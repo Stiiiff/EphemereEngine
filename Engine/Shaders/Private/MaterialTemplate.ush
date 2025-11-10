@@ -1901,14 +1901,11 @@ float3 DecodeSceneColorForMaterialNode(float2 ScreenUV)
 // Uniform material expressions.
 %s
 
-// in tangent space
+// in World space
 half3 GetMaterialNormalRaw(FMaterialPixelParameters MaterialParameter, FPixelMaterialInputs PixelMaterialInputs)
 {	
-	MaterialFloat3 ObjectNormal = (PixelMaterialInputs.Normal - 0.5) * 2;
-	ObjectNormal = normalize(ObjectNormal);
-	float3 ObjectNormalToWorld = TransformLocalVectorToWorld(MaterialParameter, ObjectNormal);
-	
-	return ObjectNormalToWorld;
+	return MaterialParameter.TangentToWorld[2];
+
 }
 
 half3 GetMaterialNormal(FMaterialPixelParameters Parameters, FPixelMaterialInputs PixelMaterialInputs)
@@ -1916,17 +1913,6 @@ half3 GetMaterialNormal(FMaterialPixelParameters Parameters, FPixelMaterialInput
 	half3 RetNormal;
 
 	RetNormal = GetMaterialNormalRaw(Parameters, PixelMaterialInputs);
-	
-	#if (USE_EDITOR_SHADERS)
-	{
-		// this feature is only needed for development/editor - we can compile it out for a shipping build (see r.CompileShadersForDevelopment cvar help)
-		half3 OverrideNormal = ResolvedView.NormalOverrideParameter.xyz;
-
-		OverrideNormal = Parameters.TangentToWorld[2] * (1 - ResolvedView.NormalOverrideParameter.w);
-
-		RetNormal = RetNormal * ResolvedView.NormalOverrideParameter.w + OverrideNormal;
-	}
-	#endif
 
 	return RetNormal;
 }
