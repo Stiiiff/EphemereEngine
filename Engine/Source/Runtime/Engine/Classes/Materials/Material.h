@@ -720,6 +720,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Material, AdvancedDisplay)
 	uint8 bFullyRough : 1;
 
+	/* Force the material to use a custom normal input in the material graph */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Material, AdvancedDisplay)
+	uint8 bUseCustomNormal : 1;
+
 	/** 
 	 *	Forces this material to use full (highp) precision in the pixel shader.
 	 *	This is slower than the default (mediump) but can be used to work around precision-related rendering errors.

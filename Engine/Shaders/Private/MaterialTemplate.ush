@@ -1901,10 +1901,19 @@ float3 DecodeSceneColorForMaterialNode(float2 ScreenUV)
 // Uniform material expressions.
 %s
 
-// in tangent space
+// in World Space
 half3 GetMaterialNormalRaw(FMaterialPixelParameters MaterialParameter, FPixelMaterialInputs PixelMaterialInputs)
 {	
-	return PixelMaterialInputs.Normal;
+	float3 WorldNormal = MaterialParameter.TangentToWorld[2];
+	
+	MaterialFloat3 ObjectNormal = (PixelMaterialInputs.Normal - 0.5) * 2;
+	float3 ObjectNormalToWorld = TransformLocalVectorToWorld(MaterialParameter, ObjectNormal);
+	
+#if MATERIAL_USE_CUSTOM_NORMAL
+	return ObjectNormalToWorld;
+#else
+	return WorldNormal;
+#endif
 }
 
 half3 GetMaterialNormal(FMaterialPixelParameters Parameters, FPixelMaterialInputs PixelMaterialInputs)
@@ -1913,7 +1922,7 @@ half3 GetMaterialNormal(FMaterialPixelParameters Parameters, FPixelMaterialInput
 
 	RetNormal = GetMaterialNormalRaw(Parameters, PixelMaterialInputs);
 	
-	#if (USE_EDITOR_SHADERS)
+#if (USE_EDITOR_SHADERS)
 	{
 		// this feature is only needed for development/editor - we can compile it out for a shipping build (see r.CompileShadersForDevelopment cvar help)
 		half3 OverrideNormal = ResolvedView.NormalOverrideParameter.xyz;
@@ -2239,10 +2248,6 @@ void CalcPixelMaterialInputs(in out FMaterialPixelParameters Parameters, in out 
 	float3 MaterialNormal = GetMaterialNormal(Parameters, PixelMaterialInputs);
 	
 	MaterialNormal = normalize(MaterialNormal);
-	
-	// normalizing after the tangent space to world space conversion improves quality with sheared bases (UV layout to WS causes shrearing)
-	// use full precision normalize to avoid overflows
-	// Parameters.WorldNormal = TransformTangentNormalToWorld(Parameters.TangentToWorld, MaterialNormal);
 	
 	// If we assume the Normal input will always be in ObjectSpace, we can direclty feed the WorldNormal with the PixelParameter
 	Parameters.WorldNormal = MaterialNormal;

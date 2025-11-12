@@ -1341,6 +1341,11 @@ bool FMaterialResource::IsFullyRough() const
 	return Material->bFullyRough;
 }
 
+bool FMaterialResource::UseCustomNormal() const
+{
+	return Material->bUseCustomNormal;
+}
+
 bool FMaterialResource::UseNormalCurvatureToRoughness() const
 {
 	return Material->bNormalCurvatureToRoughness;

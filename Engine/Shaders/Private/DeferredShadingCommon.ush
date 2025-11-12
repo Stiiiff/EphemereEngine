@@ -476,9 +476,9 @@ void EncodeGBuffer(
 	else
 	{
 		OutGBufferA.rgb = EncodeNormal( GBuffer.WorldNormal );
-		OutGBufferA.a = GBuffer.Roughness;
+		OutGBufferA.a = GBuffer.ShadingShape;
 
-		OutGBufferB.rgb = PackBuffers(GBuffer.ShadingShape, GBuffer.Outline, GBuffer.PerObjectGBufferData, BufferMix); // Store Shading and outline data into the GBuffer
+		OutGBufferB.rgb = PackBuffers(GBuffer.PerObjectGBufferData, GBuffer.Outline, GBuffer.Roughness, BufferMix); // Store Shading and outline data into the GBuffer
 		OutGBufferB.a = EncodeShadingModelIdAndSelectiveOutputMask(GBuffer.ShadingModelID, GBuffer.SelectiveOutputMask);
 
 		OutGBufferC.rgb = EncodeBaseColor( GBuffer.BaseColor );
@@ -577,11 +577,11 @@ FGBufferData DecodeGBufferData(
 		GBuffer.WorldNormal = normalize(GBuffer.WorldNormal);
 	}
 
-	GBuffer.Roughness = InGBufferA.a;
+	GBuffer.ShadingShape = InGBufferA.a;
 	
-	GBuffer.ShadingShape = InGBufferB.r;
+	GBuffer.PerObjectGBufferData = InGBufferB.r;
 	GBuffer.Outline = InGBufferB.g;
-	GBuffer.PerObjectGBufferData = InGBufferB.b;
+	GBuffer.Roughness = InGBufferB.b;
 	
 	
 	// Note: must match GetShadingModelId standalone function logic

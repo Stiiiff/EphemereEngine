@@ -103,6 +103,7 @@ FHLSLMaterialTranslator::FHLSLMaterialTranslator(FMaterial* InMaterial,
 ,	bUsesEmissiveColor(false)
 ,	bUsesDistanceCullFade(false)
 ,	bIsFullyRough(0)
+,   bUseCustomNormal(false)
 ,	bAllowCodeChunkGeneration(true)
 ,	bUsesPerInstanceCustomData(false)
 ,	bUsesAnisotropy(false)
@@ -964,8 +965,10 @@ bool FHLSLMaterialTranslator::Translate()
 			if (TranslatedCodeChunkDefinitions[MP_Normal].IsEmpty())
 			{
 				TranslatedCodeChunkDefinitions[MP_Normal] = GetDefinitions(SharedPropertyCodeChunks[NormalShaderFrequency], 0, NormalCodeChunkEnd);
-			}
+			}			
 		}
+
+		
 
 		// Now the rest, skipping Normal
 		for(uint32 PropertyId = 0; PropertyId < MP_MAX; ++PropertyId)
@@ -1190,6 +1193,8 @@ void FHLSLMaterialTranslator::GetMaterialEnvironment(EShaderPlatform InPlatform,
 	OutEnvironment.SetDefine(TEXT("MATERIAL_IS_SKY"), Material->IsSky());
 	OutEnvironment.SetDefine(TEXT("MATERIAL_COMPUTE_FOG_PER_PIXEL"), Material->ComputeFogPerPixel());
 	OutEnvironment.SetDefine(TEXT("MATERIAL_FULLY_ROUGH"), bIsFullyRough || Material->IsFullyRough());
+	OutEnvironment.SetDefine(TEXT("MATERIAL_USE_CUSTOM_NORMAL"), Material->UseCustomNormal());
+	OutEnvironment.SetDefine(TEXT("MATERIAL_USE_NORMAL_TEXTURE"), Material->HasNormalConnected());
 	OutEnvironment.SetDefine(TEXT("MATERIAL_USES_ANISOTROPY"), bUsesAnisotropy && FDataDrivenShaderPlatformInfo::GetSupportsAnisotropicMaterials(InPlatform));
 
 	// Count the number of VTStacks (each stack will allocate a feedback slot)
