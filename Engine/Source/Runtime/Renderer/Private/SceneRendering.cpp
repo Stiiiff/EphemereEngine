@@ -324,7 +324,7 @@ DECLARE_CYCLE_STAT(TEXT("DeferredShadingSceneRenderer ViewExtensionPreRenderView
 #define FASTVRAM_CVAR(Name,DefaultValue) static TAutoConsoleVariable<int32> CVarFastVRam_##Name(TEXT("r.FastVRam."#Name), DefaultValue, TEXT(""))
 
 FASTVRAM_CVAR(GBufferA, 0);
-FASTVRAM_CVAR(GBufferB, 1);
+FASTVRAM_CVAR(GBufferB, 0);
 FASTVRAM_CVAR(GBufferC, 0);
 FASTVRAM_CVAR(GBufferD, 0);
 FASTVRAM_CVAR(GBufferE, 0);

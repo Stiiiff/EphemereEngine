@@ -283,6 +283,10 @@ protected:
 	uint32 bUsesDistanceCullFade : 1;
 	/** true if the Roughness input evaluates to a constant 1.0 */
 	uint32 bIsFullyRough : 1;
+
+	/** true if we want to use a cusotm normal for the shading calculation */
+	uint32 bUseCustomNormal : 1;
+
 	/** true if allowed to generate code chunks. Translator operates in two phases; generate all code chunks & query meta data based on generated code chunks. */
 	uint32 bAllowCodeChunkGeneration : 1;
 	

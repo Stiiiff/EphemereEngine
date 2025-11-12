@@ -250,7 +250,6 @@ void FMaterialBakingModule::StartupModule()
 	PerPropertyFormat.Add(MP_Opacity, PF_B8G8R8A8);
 	PerPropertyFormat.Add(MP_OpacityMask, PF_B8G8R8A8);
 	PerPropertyFormat.Add(MP_BaseColor, PF_B8G8R8A8);
-	PerPropertyFormat.Add(MP_ObjectNormal, PF_B8G8R8A8);
 	PerPropertyFormat.Add(MP_Roughness, PF_B8G8R8A8);
 	PerPropertyFormat.Add(MP_Anisotropy, PF_B8G8R8A8);
 	PerPropertyFormat.Add(MP_Normal, PF_B8G8R8A8);

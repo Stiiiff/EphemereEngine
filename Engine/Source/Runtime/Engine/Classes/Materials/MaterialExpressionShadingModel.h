@@ -30,7 +30,7 @@ class UMaterialExpressionShadingModel : public UMaterialExpression
 	virtual void GetCaption(TArray<FString>& OutCaptions) const override;
 #endif
 public:
-	UPROPERTY(EditAnywhere, Category=ShadingModel,  meta=(ValidEnumValues="MSM_Lit, MSM_Skin, MSM_Metal, MSM_Foliage, MSM_Hair, MSM_Clothing, MSM_Ice"))
+	UPROPERTY(EditAnywhere, Category=ShadingModel,  meta=(ValidEnumValues="MSM_Lit, MSM_Skin, MSM_Metal, MSM_Foliage, MSM_Hair, MSM_Clothing, MSM_ThickTranslucent"))
 	TEnumAsByte<enum EMaterialShadingModel> ShadingModel = MSM_Lit;
 	//~ End UMaterialExpression Interface
 };

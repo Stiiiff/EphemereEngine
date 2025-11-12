@@ -50,12 +50,9 @@
 #define PPI_ShadingModelID 21
 #define PPI_AmbientOcclusion 22
 #define PPI_CustomStencil 23
-#define PPI_StoredBaseColor 24
-#define PPI_StoredSpecular 25
-#define PPI_Velocity 26
-#define PPI_WorldTangent 27
-#define PPI_ObjectNormal 28
-#define PPI_Anisotropy 29
+#define PPI_Velocity 24
+#define PPI_WorldTangent 25
+#define PPI_Anisotropy 26
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -231,9 +228,6 @@ struct FMaterialPixelParameters
 	
 	/** Normalized world space tangent. */
 	half3 WorldTangent;
-	
-	/** Normalized Object space Normal. */
-	half3 ObjectNormal;
 
 	/** Normalized world space reflected camera vector. */
 	half3 ReflectionVector;
@@ -1829,8 +1823,6 @@ float4 SceneTextureLookup(float2 UV, int SceneTextureIndex, bool bFiltered)
 			return IsSubsurfaceModel(ScreenSpaceData.GBuffer.ShadingModelID) ? float4( ExtractSubsurfaceColor(ScreenSpaceData.GBuffer), ScreenSpaceData.GBuffer.CustomData.a ) : ScreenSpaceData.GBuffer.CustomData;
 		case PPI_BaseColor:
 			return float4(ScreenSpaceData.GBuffer.BaseColor, 0);
-		case PPI_ObjectNormal:
-			return float4(ScreenSpaceData.GBuffer.ObjectNormal, 0);
 		case PPI_WorldNormal:
 			return float4(ScreenSpaceData.GBuffer.WorldNormal, 0);
 		case PPI_SeparateTranslucency:
@@ -1865,10 +1857,6 @@ float4 SceneTextureLookup(float2 UV, int SceneTextureIndex, bool bFiltered)
 			return CalcSceneAO(UV);
 		case PPI_CustomStencil:
 			return CalcSceneCustomStencil(PixelPos);
-		case PPI_StoredBaseColor:
-			return float4(ScreenSpaceData.GBuffer.StoredBaseColor, 0);
-		case PPI_StoredSpecular:
-			return float4(ScreenSpaceData.GBuffer.StoredSpecular.rrr, 0);
 #if POST_PROCESS_MATERIAL
 		case PPI_Velocity:
 			return float4(PostProcessVelocityLookup(ConvertToDeviceZ(ScreenSpaceData.GBuffer.Depth), UV), 0, 0);
@@ -1913,31 +1901,37 @@ float3 DecodeSceneColorForMaterialNode(float2 ScreenUV)
 // Uniform material expressions.
 %s
 
-// in tangent space
-half3 GetMaterialNormalRaw(FPixelMaterialInputs PixelMaterialInputs)
-{
-	return PixelMaterialInputs.Normal;
+// in World Space
+half3 GetMaterialNormalRaw(FMaterialPixelParameters MaterialParameter, FPixelMaterialInputs PixelMaterialInputs)
+{	
+	float3 WorldNormal = MaterialParameter.TangentToWorld[2];
+	
+	MaterialFloat3 ObjectNormal = (PixelMaterialInputs.Normal - 0.5) * 2;
+	float3 ObjectNormalToWorld = TransformLocalVectorToWorld(MaterialParameter, ObjectNormal);
+	
+#if MATERIAL_USE_CUSTOM_NORMAL
+	return ObjectNormalToWorld;
+#else
+	return WorldNormal;
+#endif
 }
 
 half3 GetMaterialNormal(FMaterialPixelParameters Parameters, FPixelMaterialInputs PixelMaterialInputs)
 {
 	half3 RetNormal;
 
-	RetNormal = GetMaterialNormalRaw(PixelMaterialInputs);
-		
-	#if (USE_EDITOR_SHADERS)
+	RetNormal = GetMaterialNormalRaw(Parameters, PixelMaterialInputs);
+	
+#if (USE_EDITOR_SHADERS)
 	{
 		// this feature is only needed for development/editor - we can compile it out for a shipping build (see r.CompileShadersForDevelopment cvar help)
 		half3 OverrideNormal = ResolvedView.NormalOverrideParameter.xyz;
 
-		#if !MATERIAL_TANGENTSPACENORMAL
-			OverrideNormal = Parameters.TangentToWorld[2] * (1 - ResolvedView.NormalOverrideParameter.w);
-		#endif
+		OverrideNormal = Parameters.TangentToWorld[2] * (1 - ResolvedView.NormalOverrideParameter.w);
 
 		RetNormal = RetNormal * ResolvedView.NormalOverrideParameter.w + OverrideNormal;
 	}
 	#endif
-
 	return RetNormal;
 }
 
@@ -1984,34 +1978,6 @@ half3 GetMaterialBaseColorRaw(FPixelMaterialInputs PixelMaterialInputs)
 half3 GetMaterialBaseColor(FPixelMaterialInputs PixelMaterialInputs)
 {
 	return saturate(GetMaterialBaseColorRaw(PixelMaterialInputs));
-}
-
-half3 GetMaterialObjectNormalRaw(FMaterialPixelParameters MaterialParameter, FPixelMaterialInputs PixelMaterialInputs)
-{
-	if (dot(MaterialParameter.ObjectNormal, PixelMaterialInputs.ObjectNormal) != 0.0f)
-	{
-		MaterialFloat3 LocalVector = (PixelMaterialInputs.ObjectNormal - 0.5) * 2;
-		LocalVector = normalize(LocalVector);
-		float3 ObjectNormalToWorld = TransformLocalVectorToWorld(MaterialParameter, LocalVector);
-		
-		return ObjectNormalToWorld;
-	}
-	else
-	{
-		return MaterialParameter.ObjectNormal;
-	}
-}
-
-half3 GetMaterialObjectNormal(FMaterialPixelParameters MaterialParameter, FPixelMaterialInputs PixelMaterialInputs)
-{
-	if (dot(MaterialParameter.ObjectNormal, PixelMaterialInputs.ObjectNormal) != 0.0f)
-	{
-		return GetMaterialObjectNormalRaw(MaterialParameter, PixelMaterialInputs);
-	}
-	else
-	{
-		return GetMaterialObjectNormalRaw(MaterialParameter, PixelMaterialInputs);
-	}
 }
 
 half GetMaterialRoughnessRaw(FPixelMaterialInputs PixelMaterialInputs)
@@ -2278,14 +2244,13 @@ void CalcPixelMaterialInputs(in out FMaterialPixelParameters Parameters, in out 
 	// The Normal is a special case as it might have its own expressions and also be used to calculate other inputs, so perform the assignment here
 %s
 
-	// Note that here MaterialNormal can be in world space or tangent space (should always be Tangent Space since we removed the World Normal permutation)
+	// The MaterialNormal should always be in WorldSpace now.
 	float3 MaterialNormal = GetMaterialNormal(Parameters, PixelMaterialInputs);
 	
 	MaterialNormal = normalize(MaterialNormal);
 	
-	// normalizing after the tangent space to world space conversion improves quality with sheared bases (UV layout to WS causes shrearing)
-	// use full precision normalize to avoid overflows
-	Parameters.WorldNormal = TransformTangentNormalToWorld(Parameters.TangentToWorld, MaterialNormal);
+	// If we assume the Normal input will always be in ObjectSpace, we can direclty feed the WorldNormal with the PixelParameter
+	Parameters.WorldNormal = MaterialNormal;
 
 	// flip the normal for backfaces being rendered with a two-sided material
 	//Parameters.WorldNormal *= Parameters.TwoSidedSign;
@@ -2304,8 +2269,6 @@ void CalcPixelMaterialInputs(in out FMaterialPixelParameters Parameters, in out 
 #else
 	Parameters.WorldTangent = 0;
 #endif
-	
-	Parameters.ObjectNormal = Parameters.TangentToWorld[2];
 
 }
 

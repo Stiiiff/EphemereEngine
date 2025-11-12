@@ -118,7 +118,6 @@ FGBufferData GetGBufferData(uint2 PixelCoord)
 	GBuffer.BaseColor = float3(0, 0, 0);
 	GBuffer.Roughness = 1;
 	GBuffer.CustomData = float4(0,0,1,0);
-	GBuffer.ObjectNormal = float3(0, 0, 1);
 
 	uint MacroGroupIndex = 0;
 	const FNodeDesc NodeDesc = DecodeNodeDesc(VisibilityNodeIndex.Load(uint3(PixelCoord, 0)));
@@ -138,7 +137,6 @@ FGBufferData GetGBufferData(uint2 PixelCoord)
 				GBuffer.WorldNormal = Sample.Tangent;
 				GBuffer.BaseColor = Sample.BaseColor;
 				GBuffer.Roughness = Sample.Roughness;
-				GBuffer.ObjectNormal = Sample.ObjectNormal;
 				ClosestDepth = Sample.Depth;
 
 				// todo

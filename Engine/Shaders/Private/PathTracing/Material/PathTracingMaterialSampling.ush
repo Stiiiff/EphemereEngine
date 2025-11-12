@@ -45,7 +45,7 @@ bool IsNeeValidMaterial(FMaterialClosestHitPayload Payload)
 		case SHADINGMODELID_METAL:			
 		case SHADINGMODELID_FOLIAGE:	
 		case SHADINGMODELID_CLOTHING:
-		case SHADINGMODELID_ICE:
+		case SHADINGMODELID_THICKTRANSLUCENT:
 		case SHADINGMODELID_SKIN:
 		default:
 			return true;
@@ -146,7 +146,7 @@ float3 EstimateMaterialAlbedo(FMaterialClosestHitPayload Payload)
 			break;
 #else
 		case SHADINGMODELID_FOLIAGE:
-		case SHADINGMODELID_ICE:
+		case SHADINGMODELID_THICKTRANSLUCENT:
 		case SHADINGMODELID_SKIN:
 			Albedo = BrdfWeight * (Payload.DiffuseColor + Payload.SpecularColor + GetSubsurfaceColor(Payload));
 			break;
@@ -189,7 +189,7 @@ void AdjustMaterialRoughness(inout FMaterialClosestHitPayload Payload, float Pat
 		case SHADINGMODELID_LIT:
 		case SHADINGMODELID_METAL:
 		case SHADINGMODELID_CLOTHING:
-		case SHADINGMODELID_ICE:
+		case SHADINGMODELID_THICKTRANSLUCENT:
 		case SHADINGMODELID_SKIN:
 			Payload.Roughness = max(Payload.Roughness, PathRoughness);
 			break;
@@ -228,7 +228,7 @@ FMaterialClosestHitPayload UnpackPathTracingPayload(FPackedMaterialClosestHitPay
 	switch (HitPayload.ShadingModelID)
 	{
 #if !SIMPLIFIED_MATERIAL_SHADER
-		case SHADINGMODELID_ICE:
+		case SHADINGMODELID_THICKTRANSLUCENT:
 		case SHADINGMODELID_SKIN:
 		{
 			// TODO: is this accurate enough? hard to measure exactly since the raster path uses a very different approach
@@ -359,7 +359,7 @@ FMaterialSample SampleMaterial(
 			return Result;
 		case SHADINGMODELID_LIT:
 		case SHADINGMODELID_METAL:
-		case SHADINGMODELID_ICE:
+		case SHADINGMODELID_THICKTRANSLUCENT:
 		case SHADINGMODELID_SKIN:
 			Result = DefaultLit_SampleMaterial(RayDirection, Payload, RandSample);
 			break;
@@ -447,7 +447,7 @@ FMaterialEval EvalMaterial(
 			break;
 		case SHADINGMODELID_LIT:
 		case SHADINGMODELID_METAL:
-		case SHADINGMODELID_ICE:
+		case SHADINGMODELID_THICKTRANSLUCENT:
 		case SHADINGMODELID_SKIN:
 			Result = DefaultLit_EvalMaterial(IncomingDirection, OutgoingDirection, Payload);
 			break;

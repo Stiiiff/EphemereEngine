@@ -471,7 +471,7 @@ enum EMaterialShadingModel
 	MSM_Foliage					UMETA(DisplayName="Foliage"),
 	MSM_Hair					UMETA(DisplayName="Hair"),
 	MSM_Clothing				UMETA(DisplayName="Cloth"),
-	MSM_Ice						UMETA(DisplayName="Ice"),
+	MSM_ThickTranslucent		UMETA(DisplayName="ThickTranslucent"),
 	/** Number of unique shading models. */
 	MSM_NUM						UMETA(Hidden),
 	/** Shading model will be determined by the Material Expression Graph,

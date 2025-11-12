@@ -799,7 +799,6 @@ void MainPS(
 	GBuffer.WorldNormal = Sample.Tangent;
 	GBuffer.BaseColor = Sample.BaseColor;
 	GBuffer.Roughness = Sample.Roughness;
-	GBuffer.ObjectNormal = Sample.ObjectNormal;
 	GBuffer.Depth = ConvertFromDeviceZ(Sample.Depth);
 	GBuffer.GBufferAO = 1;
 	GBuffer.CustomData = float4(HairDualScatteringRoughnessOverride, 0, Sample.Backlit, 0);

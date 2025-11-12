@@ -80,10 +80,6 @@ struct FMaterialProxySettings
 	UPROPERTY(Category = Material, BlueprintReadWrite, EditAnywhere)
 	uint8 bTangentMap:1;
 
-	// Whether to generate a texture for the ObjectNormal property
-	UPROPERTY(Category = Material, BlueprintReadWrite, EditAnywhere)
-	uint8 bObjectNormalMap:1;
-
 	// Whether to generate a texture for the Roughness property
 	UPROPERTY(Category = Material, BlueprintReadWrite, EditAnywhere)
 	uint8 bRoughnessMap:1;
@@ -119,10 +115,6 @@ struct FMaterialProxySettings
 	// Override Tangent texture size
 	UPROPERTY(Category = Material, BlueprintReadWrite, AdvancedDisplay, EditAnywhere, meta = (ClampMin = "1", UIMin = "1"))
 	FIntPoint TangentTextureSize;
-
-	// Override ObjectNormal texture size
-	UPROPERTY(Category = Material, BlueprintReadWrite, AdvancedDisplay, EditAnywhere, meta = (ClampMin = "1", UIMin = "1"))
-	FIntPoint ObjectNormalTextureSize;
 
 	// Override Roughness texture size
 	UPROPERTY(Category = Material, BlueprintReadWrite, AdvancedDisplay, EditAnywhere, meta = (ClampMin = "1", UIMin = "1"))
@@ -171,7 +163,6 @@ struct FMaterialProxySettings
 		, DiffuseTextureSize(1024, 1024)
 		, NormalTextureSize(1024, 1024)
 		, TangentTextureSize(1024, 1024)
-		, ObjectNormalTextureSize(1024, 1024)
 		, RoughnessTextureSize(1024, 1024)
 		, AnisotropyTextureSize(1024, 1024)
 		, EmissiveTextureSize(1024, 1024)
@@ -199,7 +190,6 @@ struct FMaterialProxySettings
 			&& AmbientOcclusionConstant == Other.AmbientOcclusionConstant
 			&& DiffuseTextureSize == Other.DiffuseTextureSize
 			&& NormalTextureSize == Other.NormalTextureSize
-			&& ObjectNormalTextureSize == Other.ObjectNormalTextureSize
 			&& RoughnessTextureSize == Other.RoughnessTextureSize
 			&& AnisotropyTextureSize == Other.AnisotropyTextureSize
 			&& EmissiveTextureSize == Other.EmissiveTextureSize

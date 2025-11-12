@@ -35,7 +35,6 @@ UENUM()
 enum class EFlattenMaterialProperties : uint8
 {
 	Diffuse,
-	ObjectNormal,
 	Roughness,
 	Anisotropy,
 	Normal,

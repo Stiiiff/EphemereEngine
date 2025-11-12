@@ -13,7 +13,7 @@ void CompositeSkyLightPS(
 )
 {
 	FGBufferData GBufferData = GetGBufferDataFromSceneTextures(UV);
-	float3 Albedo = GBufferData.StoredBaseColor - GBufferData.StoredBaseColor * GBufferData.Metallic;
+	float3 Albedo = GBufferData.BaseColor;
 	float4 SkyLight = SkyLightTexture.Sample(SkyLightTextureSampler, UV);
 	// Apply albedo after denoising
 	SkyLight.rgb *= Albedo;

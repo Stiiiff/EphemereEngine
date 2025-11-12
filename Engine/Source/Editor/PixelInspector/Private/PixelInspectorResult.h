@@ -12,7 +12,7 @@
 #define PIXEL_INSPECTOR_SHADINGMODELID_FOLIAGE 4
 #define PIXEL_INSPECTOR_SHADINGMODELID_HAIR 5
 #define PIXEL_INSPECTOR_SHADINGMODELID_CLOTHING 6
-#define PIXEL_INSPECTOR_SHADINGMODELID_ICE 7
+#define PIXEL_INSPECTOR_SHADINGMODELID_THICKTRANSLUCENT 7
 #define PIXEL_INSPECTOR_SHADINGMODELID_MASK 0xF
 
 namespace PixelInspector
@@ -34,7 +34,6 @@ namespace PixelInspector
 
 			Normal = FVector(0.0f);
 			Roughness = 0.0f;
-			ObjectNormal = FVector(0.0f);
 			ShadingModel = MSM_Lit;
 			SelectiveOutputMask = 0;
 			BaseColor = FLinearColor::Black;
@@ -85,7 +84,7 @@ namespace PixelInspector
 		//Buffers value
 		FVector Normal; //GBufferA RGB
 		float Roughness; //GBufferA A
-		FVector ObjectNormal; //GBufferB RGB
+		 //GBufferB RGB
 		EMaterialShadingModel ShadingModel; //GBufferB A encode
 		int32 SelectiveOutputMask; //GBufferB A encode
 		FLinearColor BaseColor; //GBufferC RGB
@@ -97,7 +96,7 @@ namespace PixelInspector
 		//////////////////////////////////////////////////////////////////////////
 		// Per shader model Data
 
-		//MSM_Ice
+		//MSM_ThickTranslucent
 		//MSM_Skin
 		//MSM_Foliage
 		FLinearColor SubSurfaceColor; // GBufferD RGB

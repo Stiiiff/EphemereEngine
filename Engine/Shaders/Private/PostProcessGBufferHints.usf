@@ -19,7 +19,8 @@ uint ComputeAdvice(FGBufferData BufferData, float3 OriginalSceneColor)
 
 	FLATTEN if(BufferData.ShadingModelID != SHADINGMODELID_UNLIT)
 	{
-		FLATTEN if(BufferData.ShadingModelID == SHADINGMODELID_ICE)
+		FLATTEN
+		if (BufferData.ShadingModelID == SHADINGMODELID_THICKTRANSLUCENT)
 		{
 			SubsurfaceLum = dot(OneThird.xxx, ExtractSubsurfaceColor(BufferData));
 		}

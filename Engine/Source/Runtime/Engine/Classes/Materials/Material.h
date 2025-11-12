@@ -325,9 +325,6 @@ class UMaterial : public UMaterialInterface
 	FColorMaterialInput BaseColor;
 #endif
 
-	UPROPERTY()
-	FVectorMaterialInput ObjectNormal;
-
 #if WITH_EDITORONLY_DATA
 	UPROPERTY()
 	FScalarMaterialInput Roughness;
@@ -532,7 +529,7 @@ public:
 	float TranslucentSelfShadowSecondOpacity;
 
 	/** 
-	 * Controls how diffuse the material's backscattering is when using the MSM_Ice shading model.
+	 * Controls how diffuse the material's backscattering is when using the MSM_ThickTranslucent shading model.
 	 * Larger exponents give a less diffuse look (smaller, brighter backscattering highlight).
 	 * This is only used when the object is casting a volumetric translucent shadow from a directional light.
 	 */
@@ -722,6 +719,10 @@ public:
 	/* Forces the material to be completely rough. Saves a number of instructions and one sampler. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Material, AdvancedDisplay)
 	uint8 bFullyRough : 1;
+
+	/* Force the material to use a custom normal input in the material graph */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Material, AdvancedDisplay)
+	uint8 bUseCustomNormal : 1;
 
 	/** 
 	 *	Forces this material to use full (highp) precision in the pixel shader.
@@ -1745,7 +1746,6 @@ public:
 	bool HasAmbientOcclusionConnected() const { check(0); return false; }
 #endif 	
 	bool HasNormalConnected() const { return Normal.IsConnected(); }
-	bool HasObjectNormalConnected() const { return ObjectNormal.IsConnected(); }
 	bool HasEmissiveColorConnected() const { return EmissiveColor.IsConnected(); }
 	bool HasAnisotropyConnected() const { return Anisotropy.IsConnected(); }
 

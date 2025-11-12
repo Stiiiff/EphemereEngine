@@ -124,7 +124,7 @@ void MainPS(
 				Tangent		+= Sample.Tangent;
 				BaseColor	+= Sample.BaseColor;
 				Roughness	+= Sample.Roughness;
-				Specular	+= Sample.ObjectNormal;
+				Specular	+= Sample.Specular;
 			}
 			else if (SelectedIndex == NodeIt)
 			{
@@ -132,7 +132,7 @@ void MainPS(
 				Tangent		= Sample.Tangent;
 				BaseColor	= Sample.BaseColor;
 				Roughness	= Sample.Roughness;
-				Specular	= Sample.ObjectNormal;
+				Specular	= Sample.Specular;
 			}
 		}
 

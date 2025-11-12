@@ -103,6 +103,7 @@ FHLSLMaterialTranslator::FHLSLMaterialTranslator(FMaterial* InMaterial,
 ,	bUsesEmissiveColor(false)
 ,	bUsesDistanceCullFade(false)
 ,	bIsFullyRough(0)
+,   bUseCustomNormal(false)
 ,	bAllowCodeChunkGeneration(true)
 ,	bUsesPerInstanceCustomData(false)
 ,	bUsesAnisotropy(false)
@@ -120,7 +121,6 @@ FHLSLMaterialTranslator::FHLSLMaterialTranslator(FMaterial* InMaterial,
 	SharedPixelProperties[MP_Opacity] = true;
 	SharedPixelProperties[MP_OpacityMask] = true;
 	SharedPixelProperties[MP_BaseColor] = true;
-	SharedPixelProperties[MP_ObjectNormal] = true;
 	SharedPixelProperties[MP_Roughness] = true;
 	SharedPixelProperties[MP_Anisotropy] = true;
 	SharedPixelProperties[MP_AmbientOcclusion] = true;
@@ -638,7 +638,6 @@ bool FHLSLMaterialTranslator::Translate()
 		Chunk[MP_DiffuseColor]					= Material->CompilePropertyAndSetMaterialProperty(MP_DiffuseColor			,this);
 		Chunk[MP_SpecularColor]					= Material->CompilePropertyAndSetMaterialProperty(MP_SpecularColor			,this);
 		Chunk[MP_BaseColor]						= Material->CompilePropertyAndSetMaterialProperty(MP_BaseColor				,this);
-		Chunk[MP_ObjectNormal]					= Material->CompilePropertyAndSetMaterialProperty(MP_ObjectNormal			,this);
 		Chunk[MP_Roughness]						= Material->CompilePropertyAndSetMaterialProperty(MP_Roughness				,this);
 		Chunk[MP_Anisotropy]					= Material->CompilePropertyAndSetMaterialProperty(MP_Anisotropy				,this);
 		Chunk[MP_Opacity]						= Material->CompilePropertyAndSetMaterialProperty(MP_Opacity				,this);
@@ -966,8 +965,10 @@ bool FHLSLMaterialTranslator::Translate()
 			if (TranslatedCodeChunkDefinitions[MP_Normal].IsEmpty())
 			{
 				TranslatedCodeChunkDefinitions[MP_Normal] = GetDefinitions(SharedPropertyCodeChunks[NormalShaderFrequency], 0, NormalCodeChunkEnd);
-			}
+			}			
 		}
+
+		
 
 		// Now the rest, skipping Normal
 		for(uint32 PropertyId = 0; PropertyId < MP_MAX; ++PropertyId)
@@ -1192,6 +1193,8 @@ void FHLSLMaterialTranslator::GetMaterialEnvironment(EShaderPlatform InPlatform,
 	OutEnvironment.SetDefine(TEXT("MATERIAL_IS_SKY"), Material->IsSky());
 	OutEnvironment.SetDefine(TEXT("MATERIAL_COMPUTE_FOG_PER_PIXEL"), Material->ComputeFogPerPixel());
 	OutEnvironment.SetDefine(TEXT("MATERIAL_FULLY_ROUGH"), bIsFullyRough || Material->IsFullyRough());
+	OutEnvironment.SetDefine(TEXT("MATERIAL_USE_CUSTOM_NORMAL"), Material->UseCustomNormal());
+	OutEnvironment.SetDefine(TEXT("MATERIAL_USE_NORMAL_TEXTURE"), Material->HasNormalConnected());
 	OutEnvironment.SetDefine(TEXT("MATERIAL_USES_ANISOTROPY"), bUsesAnisotropy && FDataDrivenShaderPlatformInfo::GetSupportsAnisotropicMaterials(InPlatform));
 
 	// Count the number of VTStacks (each stack will allocate a feedback slot)
@@ -1271,9 +1274,9 @@ void FHLSLMaterialTranslator::GetMaterialEnvironment(EShaderPlatform InPlatform,
 			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_CLOTHING"), TEXT("1"));
 			NumSetMaterials++;
 		}
-		if (ShadingModels.HasShadingModel(MSM_Ice))
+		if (ShadingModels.HasShadingModel(MSM_ThickTranslucent))
 		{
-			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_ICE"), TEXT("1"));
+			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_THICKTRANSLUCENT"), TEXT("1"));
 			NumSetMaterials++;
 		}
 

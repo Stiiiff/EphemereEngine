@@ -323,7 +323,6 @@ namespace GLTF
 		const FString& GetName() const;
 
 		FMaterialExpressionInput& GetBaseColor();
-		FMaterialExpressionInput& GetObjectNormal();
 		FMaterialExpressionInput& GetRoughness();
 		FMaterialExpressionInput& GetEmissiveColor();
 		FMaterialExpressionInput& GetOpacity();
@@ -342,7 +341,6 @@ namespace GLTF
 	protected:
 		FString                  Name;
 		FMaterialExpressionInput BaseColor;
-		FMaterialExpressionInput ObjectNormal;
 		FMaterialExpressionInput Roughness;
 		FMaterialExpressionInput EmissiveColor;
 		FMaterialExpressionInput Opacity;
@@ -366,10 +364,6 @@ namespace GLTF
 	inline FMaterialExpressionInput& FMaterialElement::GetBaseColor()
 	{
 		return BaseColor;
-	}
-	inline FMaterialExpressionInput& FMaterialElement::GetObjectNormal()
-	{
-		return ObjectNormal;
 	}
 	inline FMaterialExpressionInput& FMaterialElement::GetRoughness()
 	{
