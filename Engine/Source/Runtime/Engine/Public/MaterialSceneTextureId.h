@@ -37,6 +37,8 @@ enum ESceneTextureId
 	PPI_Roughness UMETA(DisplayName="Roughness"),
 	/** Material ambient occlusion, single channel (GBuffer) */
 	PPI_MaterialAO UMETA(DisplayName="MaterialAO"),
+	/** Material Shading, single channel in 0..1 range (GBuffer) */
+	PPI_ShadingShape UMETA(DisplayName = "ShadingShape"),
 	/** Scene depth, single channel, contains the linear depth of the opaque objects rendered with CustomDepth (mesh property) */
 	PPI_CustomDepth UMETA(DisplayName="CustomDepth"),
 	/** Input #0 of this postprocess pass, usually the only one hooked up */
