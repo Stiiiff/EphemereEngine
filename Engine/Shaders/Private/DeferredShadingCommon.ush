@@ -408,8 +408,8 @@ struct FGBufferData
 	float PerObjectGBufferData;
 	// 0..1 shading gradient shape
 	float ShadingShape;
-	// 0..1 outline
-	float Outline;
+	// 0..1 empty
+	float Empty;
 	// in world units
 	float CustomDepth;
 	// Custom depth stencil value
@@ -478,7 +478,7 @@ void EncodeGBuffer(
 		OutGBufferA.rgb = EncodeNormal( GBuffer.WorldNormal );
 		OutGBufferA.a = GBuffer.ShadingShape;
 
-		OutGBufferB.rgb = PackBuffers(GBuffer.PerObjectGBufferData, GBuffer.Outline, GBuffer.Roughness, BufferMix); // Store Shading and outline data into the GBuffer
+		OutGBufferB.rgb = PackBuffers(GBuffer.PerObjectGBufferData, GBuffer.Empty, GBuffer.Roughness, BufferMix); // Store Shading and the Empty data into the GBuffer
 		OutGBufferB.a = EncodeShadingModelIdAndSelectiveOutputMask(GBuffer.ShadingModelID, GBuffer.SelectiveOutputMask);
 
 		OutGBufferC.rgb = EncodeBaseColor( GBuffer.BaseColor );
@@ -580,7 +580,7 @@ FGBufferData DecodeGBufferData(
 	GBuffer.ShadingShape = InGBufferA.a;
 	
 	GBuffer.PerObjectGBufferData = InGBufferB.r;
-	GBuffer.Outline = InGBufferB.g;
+	GBuffer.Empty = InGBufferB.g;
 	GBuffer.Roughness = InGBufferB.b;
 	
 	
