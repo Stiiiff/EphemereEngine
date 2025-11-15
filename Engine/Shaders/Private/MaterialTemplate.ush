@@ -1904,14 +1904,13 @@ float3 DecodeSceneColorForMaterialNode(float2 ScreenUV)
 // in World Space
 half3 GetMaterialNormalRaw(FMaterialPixelParameters MaterialParameter, FPixelMaterialInputs PixelMaterialInputs)
 {	
-	float3 WorldNormal = MaterialParameter.TangentToWorld[2];
-	
+#if MATERIAL_USE_CUSTOM_NORMAL
 	MaterialFloat3 ObjectNormal = (PixelMaterialInputs.Normal - 0.5) * 2;
 	float3 ObjectNormalToWorld = TransformLocalVectorToWorld(MaterialParameter, ObjectNormal);
 	
-#if MATERIAL_USE_CUSTOM_NORMAL
 	return ObjectNormalToWorld;
 #else
+	float3 WorldNormal = MaterialParameter.TangentToWorld[2];
 	return WorldNormal;
 #endif
 }

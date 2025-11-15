@@ -1103,13 +1103,13 @@ void FGPUSkinCache::DispatchUpdateSkinTangents(FRHICommandListImmediate& RHICmdL
 
 			if (bFullPrecisionUV)
 			{
-				if (GAllowDupedVertsForRecomputeTangents) Shader = ComputeShader11;
-				else Shader = ComputeShader01;
+				if (GAllowDupedVertsForRecomputeTangents) Shader = ComputeShader01;
+				else Shader = ComputeShader11;
 			}
 			else
 			{
-				if (GAllowDupedVertsForRecomputeTangents) Shader = ComputeShader10;
-				else Shader = ComputeShader00;
+				if (GAllowDupedVertsForRecomputeTangents) Shader = ComputeShader11;
+				else Shader = ComputeShader10;
 			}
 
 			check(Shader.IsValid());
