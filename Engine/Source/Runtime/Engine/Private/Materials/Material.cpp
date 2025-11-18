@@ -926,6 +926,7 @@ UMaterial::UMaterial(const FObjectInitializer& ObjectInitializer)
 	
 	Opacity.Constant = 1.0f;
 	OpacityMask.Constant = 1.0f;
+	ShadingShape.Constant = 1.0f;
 #endif
 	OpacityMaskClipValue = 0.3333f;
 	bCastDynamicShadowAsMasked = false;
@@ -3217,7 +3218,7 @@ void UMaterial::Serialize(FArchive& Ar)
 	}
 #endif // #if WITH_EDITOR
 
-	static_assert(MP_MAX == 30, "New material properties must have DoMaterialAttributeReorder called on them to ensure that any future reordering of property pins is correctly applied.");
+	static_assert(MP_MAX == 31, "New material properties must have DoMaterialAttributeReorder called on them to ensure that any future reordering of property pins is correctly applied.");
 
 	if (Ar.UE4Ver() < VER_UE4_MATERIAL_MASKED_BLENDMODE_TIDY)
 	{
@@ -3444,6 +3445,7 @@ void UMaterial::PostLoad()
 	DoMaterialAttributeReorder(&Anisotropy, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&Normal, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&Tangent, UE4Ver, RenderObjVer);
+	DoMaterialAttributeReorder(&ShadingShape, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&EmissiveColor, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&Opacity, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&OpacityMask, UE4Ver, RenderObjVer);
@@ -4885,6 +4887,7 @@ FExpressionInput* UMaterial::GetExpressionInputForProperty(EMaterialProperty InP
 		case MP_Anisotropy:				return &Anisotropy;
 		case MP_Normal:					return &Normal;
 		case MP_Tangent:				return &Tangent;
+		case MP_ShadingShape:			return &ShadingShape;
 		case MP_WorldPositionOffset:	return &WorldPositionOffset;
 		case MP_WorldDisplacement:		return &WorldDisplacement;
 		case MP_TessellationMultiplier:	return &TessellationMultiplier;
@@ -5396,6 +5399,7 @@ int32 UMaterial::CompilePropertyEx( FMaterialCompiler* Compiler, const FGuid& At
 		case MP_SubsurfaceColor:		return SubsurfaceColor.CompileWithDefault(Compiler, Property);
 		case MP_Normal:					return Normal.CompileWithDefault(Compiler, Property);
 		case MP_Tangent:				return Tangent.CompileWithDefault(Compiler, Property);
+		case MP_ShadingShape:			return	ShadingShape.CompileWithDefault(Compiler, Property);
 		case MP_WorldPositionOffset:	return WorldPositionOffset.CompileWithDefault(Compiler, Property);
 		case MP_WorldDisplacement:		return WorldDisplacement.CompileWithDefault(Compiler, Property);
 		case MP_PixelDepthOffset:		return PixelDepthOffset.CompileWithDefault(Compiler, Property);
@@ -5824,6 +5828,7 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 		Active = ShadingModels.HasAnyShadingModel({ MSM_Metal, MSM_Hair }) && (!bIsTranslucentBlendMode || !bIsVolumetricTranslucencyLightingMode);
 		break;
 	case MP_Normal:
+	case MP_ShadingShape:
 		Active = (ShadingModels.IsLit() && (!bIsTranslucentBlendMode || !bIsNonDirectionalTranslucencyLightingMode)) || bHasRefraction;
 		break;
 	case MP_Tangent:

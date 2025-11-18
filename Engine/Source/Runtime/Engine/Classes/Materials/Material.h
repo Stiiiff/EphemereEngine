@@ -339,6 +339,9 @@ class UMaterial : public UMaterialInterface
 	UPROPERTY()
 	FVectorMaterialInput Tangent;
 
+	UPROPERTY()
+	FScalarMaterialInput ShadingShape;
+
 	// Emission.
 	UPROPERTY()
 	FColorMaterialInput EmissiveColor;
@@ -1739,11 +1742,13 @@ public:
 	bool HasBaseColorConnected() const { return BaseColor.IsConnected(); }
 	bool HasRoughnessConnected() const { return Roughness.IsConnected(); }
 	bool HasAmbientOcclusionConnected() const { return AmbientOcclusion.IsConnected(); }
+	bool HasShadingShapeConnected() const { return ShadingShape.IsConnected(); }
 #else	
 	// Add to runtime data only if we need to call these at runtime
 	bool HasBaseColorConnected() const { check(0); return false; }
 	bool HasRoughnessConnected() const { check(0); return false; }
 	bool HasAmbientOcclusionConnected() const { check(0); return false; }
+	bool HasShadingShapeConnected() const { check(0); return false; }
 #endif 	
 	bool HasNormalConnected() const { return Normal.IsConnected(); }
 	bool HasEmissiveColorConnected() const { return EmissiveColor.IsConnected(); }
