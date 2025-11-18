@@ -39,6 +39,9 @@ class UMaterialExpressionMakeMaterialAttributes : public UMaterialExpression
 	FExpressionInput Tangent;
 
 	UPROPERTY()
+	FExpressionInput ShadingShape;
+
+	UPROPERTY()
 	FExpressionInput WorldPositionOffset;
 
 	UPROPERTY()
