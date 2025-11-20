@@ -1834,7 +1834,7 @@ float4 SceneTextureLookup(float2 UV, int SceneTextureIndex, bool bFiltered)
 			return ScreenSpaceData.GBuffer.Roughness;
 		case PPI_MaterialAO:
 			return ScreenSpaceData.GBuffer.GBufferAO;
-		case PPI_ShadingShape
+		case PPI_ShadingShape:
 			return ScreenSpaceData.GBuffer.ShadingShape;
 		case PPI_CustomDepth:
 			return ScreenSpaceData.GBuffer.CustomDepth;
@@ -1946,6 +1946,11 @@ half3 GetMaterialTangentRaw(FPixelMaterialInputs PixelMaterialInputs)
 half3 GetMaterialTangent(FPixelMaterialInputs PixelMaterialInputs)
 {
 	return GetMaterialTangentRaw(PixelMaterialInputs);
+}
+
+uint GetMaterialShadingShape(FPixelMaterialInputs PixelMaterialInputs)
+{
+	return PixelMaterialInputs.ShadingShape;
 }
 
 half3 GetMaterialEmissiveRaw(FPixelMaterialInputs PixelMaterialInputs)
