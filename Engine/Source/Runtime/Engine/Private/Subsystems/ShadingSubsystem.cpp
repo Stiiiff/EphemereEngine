@@ -32,7 +32,7 @@ void UShadingSubsystem::UpdateShadingCurveAtlas(UCurveLinearColorAtlas* InAtlas)
 	ShadingCurveAtlas = InAtlas;
 }
 
-TObjectPtr<UCurveLinearColorAtlas> UShadingSubsystem::GetShadingCurveAtlas() const
+UCurveLinearColorAtlas* UShadingSubsystem::GetShadingCurveAtlas() const
 {
 	return ShadingCurveAtlas;
 }

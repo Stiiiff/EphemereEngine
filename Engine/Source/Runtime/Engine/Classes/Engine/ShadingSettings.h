@@ -11,8 +11,8 @@
 class UShadingSettings;
 
 /**
-	 * Settings for celshading properties. This comment is displayed as a description in the project settings menu.
-	 */
+* Settings for shading properties. This comment is displayed as a description in the project settings menu.
+*/
 
 UCLASS(config = Engine, defaultconfig, meta = (DisplayName = "Shading Settings"))
 class ENGINE_API UShadingSettings : public UDeveloperSettings

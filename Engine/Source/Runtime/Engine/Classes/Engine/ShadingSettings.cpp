@@ -22,7 +22,7 @@ void UShadingSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyCha
 			UCurveLinearColorAtlas* ObjectAtlas = ShadingCurveAtlas.LoadSynchronous();
 			if (ObjectAtlas)
 			{
-				// The logic after loeding the new atlas
+				// The logic after loading the new atlas
 				ShadingSubsystem->UpdateShadingCurveAtlas(ObjectAtlas);
 			}
 
