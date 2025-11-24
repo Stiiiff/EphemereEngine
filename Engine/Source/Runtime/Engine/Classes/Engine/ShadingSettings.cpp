@@ -2,6 +2,7 @@
 
 #include "Engine/ShadingSettings.h"
 #include "Curves/CurveLinearColorAtlas.h"
+#include "Subsystems/ShadingSubsystem.h"
 
 UShadingSettings::UShadingSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -22,6 +23,7 @@ void UShadingSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyCha
 			UCurveLinearColorAtlas* ObjectAtlas = ShadingCurveAtlas.LoadSynchronous();
 			if (ObjectAtlas)
 			{
+				UShadingSubsystem* ShadingSubsystem = GEngine->GetEngineSubsystem<UShadingSubsystem>();
 				// The logic after loading the new atlas
 				ShadingSubsystem->UpdateShadingCurveAtlas(ObjectAtlas);
 			}

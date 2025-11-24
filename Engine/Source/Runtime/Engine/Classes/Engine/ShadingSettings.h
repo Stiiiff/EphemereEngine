@@ -11,7 +11,7 @@
 class UShadingSettings;
 
 /**
-* Settings for shading properties. This comment is displayed as a description in the project settings menu.
+* Settings for shading properties.
 */
 
 UCLASS(config = Engine, defaultconfig, meta = (DisplayName = "Shading Settings"))
