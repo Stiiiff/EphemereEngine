@@ -202,7 +202,7 @@ float3 DualSpecularGGX(float AverageRoughness, float Lobe0Roughness, float Lobe1
 	return (D * Vis) * F;
 }
 
-FDirectLighting DefaultLitBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L, float Falloff, float NoL, FAreaLight AreaLight, FShadowTerms Shadow )
+FDirectLighting DefaultLitBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L, float Falloff, float NoL, FAreaLight AreaLight, FShadowTerms Shadow)
 {
 	BxDFContext Context;
 
@@ -212,7 +212,10 @@ FDirectLighting DefaultLitBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L,
 	Context.NoV = saturate(abs( Context.NoV ) + 1e-5);
 
 	FDirectLighting Lighting;
+	
+	float CurveIndex = GBuffer.ShadingShape;
 
+	float2 DiffuseCoord = float2(NoL, CurveIndex);
 	
 #if 0 // Old Shading Model Diffuse Lighting
 	Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * NoL) * Diffuse_Lambert(GBuffer.DiffuseColor);
@@ -220,7 +223,7 @@ FDirectLighting DefaultLitBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L,
 	#if 0 // Experiment
 		Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * smoothstep(NoL, 0, 0.35)) * Diffuse_Pastel(GBuffer.DiffuseColor, GBuffer.Roughness, Context.NoV, NoL, Context.VoH);
 	#else
-		Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * NoL) * Diffuse_Lambert(GBuffer.DiffuseColor);
+		Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * Texture2DSample(View.ShadingAtlas, View.ShadingSampler, DiffuseCoord, 0).r * Diffuse_Lambert(GBuffer.DiffuseColor);
 	#endif
 #endif
 	
