@@ -16,6 +16,7 @@ void SetGBufferForShadingModel(
 	const float3 BaseColor,
 	const float Roughness,
 	const float Anisotropy,
+	const uint ShadingShape,
 	const float3 SubsurfaceColor,
 	const float SubsurfaceProfile,
 	const float Dither,
@@ -27,6 +28,7 @@ void SetGBufferForShadingModel(
 	GBuffer.BaseColor = BaseColor;
 	GBuffer.Roughness = Roughness;
 	GBuffer.Anisotropy = Anisotropy;
+	GBuffer.ShadingShape = ShadingShape; 
 	GBuffer.ShadingModelID = ShadingModel;
 
 	// Calculate and set custom data for the shading models that need it

@@ -416,7 +416,11 @@ public:
 					return MaterialInterface->CompileProperty(&ProxyCompiler, MP_Normal, ForceCast_Exact_Replicate);
 				}
 				break;
-			
+			case MP_ShadingShape:
+				if (BlendMode == BLEND_Opaque || BlendMode == BLEND_Masked)
+				{
+					return MaterialInterface->CompileProperty(&ProxyCompiler, MP_ShadingShape);
+				}
 			case MP_Opacity:
 				if (BlendMode == BLEND_Masked)
 				{

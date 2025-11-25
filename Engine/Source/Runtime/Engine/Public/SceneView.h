@@ -814,6 +814,10 @@ BEGIN_GLOBAL_SHADER_PARAMETER_STRUCT_WITH_CONSTRUCTOR(FViewUniformShaderParamete
 
 	SHADER_PARAMETER_SRV(Buffer<float>, PhysicsFieldClipmapBuffer)
 
+	// Add the new necessary ressources for the shading 
+	SHADER_PARAMETER_TEXTURE(Texture2D, ShadingAtlas)
+	SHADER_PARAMETER_SAMPLER(SamplerState, ShadingSampler)
+
 END_GLOBAL_SHADER_PARAMETER_STRUCT()
 
 /** Copy of the view uniform shader parameters associated with a view for instanced stereo. */

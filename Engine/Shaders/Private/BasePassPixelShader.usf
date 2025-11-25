@@ -836,6 +836,7 @@ void FPixelShaderInOut_MainPS(
 	float MaterialAO = GetMaterialAmbientOcclusion(PixelMaterialInputs);
 	float Roughness = GetMaterialRoughness(PixelMaterialInputs);
 	float Anisotropy = GetMaterialAnisotropy(PixelMaterialInputs);
+	uint ShadingShape = GetMaterialShadingShape(PixelMaterialInputs);
 	uint ShadingModel = GetMaterialShadingModel(PixelMaterialInputs);
 
 	half Opacity = GetMaterialOpacity(PixelMaterialInputs);
@@ -929,6 +930,7 @@ void FPixelShaderInOut_MainPS(
 		BaseColor,
 		Roughness,
 		Anisotropy,
+		ShadingShape,
 		SubsurfaceColor,
 		SubsurfaceProfile,
 		GBufferDither,
@@ -993,6 +995,8 @@ void FPixelShaderInOut_MainPS(
 	}
 #endif
 	GBuffer.DiffuseColor = BaseColor - BaseColor * Metallic;
+	
+	GBuffer.ShadingShape = ShadingShape;
 
 #if USE_DEVELOPMENT_SHADERS
 	{
