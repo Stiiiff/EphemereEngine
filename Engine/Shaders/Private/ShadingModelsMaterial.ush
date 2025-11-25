@@ -28,7 +28,7 @@ void SetGBufferForShadingModel(
 	GBuffer.BaseColor = BaseColor;
 	GBuffer.Roughness = Roughness;
 	GBuffer.Anisotropy = Anisotropy;
-	GBuffer.ShadingShape = ShadingShape/64; // 64 here represents the max number of curve we can put in our atlas
+	GBuffer.ShadingShape = ShadingShape; 
 	GBuffer.ShadingModelID = ShadingModel;
 
 	// Calculate and set custom data for the shading models that need it
