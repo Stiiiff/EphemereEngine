@@ -406,7 +406,7 @@ struct FGBufferData
 	uint SelectiveOutputMask;
 	// 0..1, 2 bits, use CastContactShadow(GBuffer) or HasDynamicIndirectShadowCasterRepresentation(GBuffer) to extract
 	float PerObjectGBufferData;
-	// 0..255 shading gradient shape index
+	// 0..64 shading gradient shape index
 	uint ShadingShape;
 	// 0..1 empty
 	float Empty;

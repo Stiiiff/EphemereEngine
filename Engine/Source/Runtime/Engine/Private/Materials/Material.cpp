@@ -5645,6 +5645,7 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 	bool bBlendableOutputAlpha,
 	bool bHasTessellation,
 	bool bHasRefraction,
+	bool bUseCustomNormal,
 	bool bUsesShadingModelFromMaterialExpression)
 {
 	if (Domain == MD_PostProcess)
@@ -5818,6 +5819,7 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 		Active = BlendMode == BLEND_Masked;
 		break;
 	case MP_BaseColor:
+	case MP_ShadingShape:
 	case MP_AmbientOcclusion:
 		Active = ShadingModels.IsLit();
 		break;
@@ -5828,8 +5830,7 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 		Active = ShadingModels.HasAnyShadingModel({ MSM_Metal, MSM_Hair }) && (!bIsTranslucentBlendMode || !bIsVolumetricTranslucencyLightingMode);
 		break;
 	case MP_Normal:
-	case MP_ShadingShape:
-		Active = (ShadingModels.IsLit() && (!bIsTranslucentBlendMode || !bIsNonDirectionalTranslucencyLightingMode)) || bHasRefraction;
+		Active = (ShadingModels.IsLit() && bUseCustomNormal && (!bIsTranslucentBlendMode || !bIsVolumetricTranslucencyLightingMode)) || bHasRefraction;
 		break;
 	case MP_Tangent:
 		Active = ShadingModels.HasAnyShadingModel({  MSM_Metal, MSM_Hair }) && (!bIsTranslucentBlendMode || !bIsVolumetricTranslucencyLightingMode);
@@ -5890,6 +5891,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 		D3D11TessellationMode != MTM_NoTessellation,
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 		Refraction.IsConnected(),
+		bUseCustomNormal,
 		IsShadingModelFromMaterialExpression());
 }
 #endif // WITH_EDITOR
@@ -5907,6 +5909,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 		D3D11TessellationMode != MTM_NoTessellation,
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 		Refraction.IsConnected(),
+		bUseCustomNormal,
 		DerivedMaterial->IsShadingModelFromMaterialExpression());
 }
 
