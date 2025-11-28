@@ -213,7 +213,7 @@ FDirectLighting DefaultLitBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L,
 
 	FDirectLighting Lighting;
 	
-	float CurveIndex = GBuffer.ShadingShape;
+	float CurveIndex = float(GBuffer.ShadingShape)/64;
 
 	float2 DiffuseCoord = float2(NoL, CurveIndex);
 	
@@ -221,7 +221,7 @@ FDirectLighting DefaultLitBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L,
 	Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * NoL) * Diffuse_Lambert(GBuffer.DiffuseColor);
 #else
 	#if 0 // Experiment
-		Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * smoothstep(NoL, 0, 0.35)) * Diffuse_Pastel(GBuffer.DiffuseColor, GBuffer.Roughness, Context.NoV, NoL, Context.VoH);
+	Lighting.Diffuse = float(GBuffer.ShadingShape) / 64;
 	#else
 		Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * Texture2DSample(View.ShadingAtlas, View.ShadingSampler, DiffuseCoord).r) * Diffuse_Lambert(GBuffer.DiffuseColor);
 	#endif

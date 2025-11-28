@@ -476,7 +476,7 @@ void EncodeGBuffer(
 	else
 	{
 		OutGBufferA.rgb = EncodeNormal( GBuffer.WorldNormal );
-		OutGBufferA.a = GBuffer.ShadingShape / 64; // 64 here represents the max number of curve we can put in our atlas
+		OutGBufferA.a = float(GBuffer.ShadingShape)/64; // 64 here represents the max number of curve we can put in our atlas
 
 		OutGBufferB.rgb = PackBuffers(GBuffer.PerObjectGBufferData, GBuffer.Empty, GBuffer.Roughness, BufferMix); // Store Shading and the Empty data into the GBuffer
 		OutGBufferB.a = EncodeShadingModelIdAndSelectiveOutputMask(GBuffer.ShadingModelID, GBuffer.SelectiveOutputMask);
@@ -577,7 +577,7 @@ FGBufferData DecodeGBufferData(
 		GBuffer.WorldNormal = normalize(GBuffer.WorldNormal);
 	}
 
-	GBuffer.ShadingShape = InGBufferA.a * 64; // 64 here represents the max number of curve we can put in our atlas
+	GBuffer.ShadingShape = InGBufferA.a*64; // 64 here represents the max number of curve we can put in our atlas
 	
 	GBuffer.PerObjectGBufferData = InGBufferB.r;
 	GBuffer.Empty = InGBufferB.g;
