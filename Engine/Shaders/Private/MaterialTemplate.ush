@@ -1835,8 +1835,7 @@ float4 SceneTextureLookup(float2 UV, int SceneTextureIndex, bool bFiltered)
 		case PPI_MaterialAO:
 			return ScreenSpaceData.GBuffer.GBufferAO;
 		case PPI_ShadingShape:
-			// return float4(GetShadingShapeColor(ScreenSpaceData.GBuffer.ShadingShape), 1);
-				return ScreenSpaceData.GBuffer.ShadingShape;
+			return float4(GetShadingShapeColor(ScreenSpaceData.GBuffer.ShadingShape), 1);
 
 		case PPI_CustomDepth:
 			return ScreenSpaceData.GBuffer.CustomDepth;

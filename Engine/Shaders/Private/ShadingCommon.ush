@@ -75,6 +75,12 @@ float3 GetShadingShapeColor(uint ShadingShapeID)
 			return float3(0.2f, 0.2f, 0.8f);
 		case 4:
 			return float3(0.1f, 0.4f, 0.4f);
+		case 5:
+			return float3(0.6f, 0.1f, 0.5f);
+		case 6:
+			return float3(0.7f, 1.0f, 1.0f);
+		case 7:
+			return float3(0.3f, 1.0f, 1.0f);
 	}
 }
 
