@@ -64,7 +64,7 @@
 #endif
 #include "FXSystem.h"
 
-#include "Subsystems/ShadingSubsystem.h"
+#include "Subsystems/EphemereSettingsSubsystem.h"
 #include "Curves/CurveLinearColorAtlas.h"
 
 /*-----------------------------------------------------------------------------
@@ -1107,9 +1107,9 @@ void FViewInfo::SetupUniformBufferParameters(
 	);
 
 	// Update shading texture reference and its value
-	if (UShadingSubsystem* ShadingSubsystem = GEngine->GetEngineSubsystem<UShadingSubsystem>())
+	if (UEphemereSettingsSubsystem* EphemereSettingsSubsystem = GEngine->GetEngineSubsystem<UEphemereSettingsSubsystem>())
 	{
-		if (UCurveLinearColorAtlas* ShadingAtlas = ShadingSubsystem->GetShadingCurveAtlas())
+		if (UCurveLinearColorAtlas* ShadingAtlas = EphemereSettingsSubsystem->GetShadingCurveAtlas())
 		{
 			ViewUniformShaderParameters.ShadingAtlas = ShadingAtlas->TextureReference.TextureReferenceRHI;
 		}

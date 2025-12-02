@@ -5,22 +5,22 @@
 #include "CoreMinimal.h"
 #include "Subsystems/EngineSubsystem.h"
 
-#include "ShadingSubsystem.generated.h"
+#include "EphemereSettingsSubsystem.generated.h"
 
-class UShadingSubsystem;
+class UEphemereSettingsSubsystem;
 
 /**
- * UShadingSubsystem
- * Shading subsystem to load and manage curve atlas.
+ * UEphemereSettingsSubsystem
+ * EphemereSettings subsystem to load and Ephemere Settings.
  */
 
 UCLASS()
-class ENGINE_API UShadingSubsystem : public UEngineSubsystem
+class ENGINE_API UEphemereSettingsSubsystem : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
 public:
-	// Initialize the subsystem, we load the curve atlas here
+	// Initialize the subsystem
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	// Triggered at the end of the subsystem lifetime, for cleanup

@@ -6,21 +6,21 @@
 #include "UObject/ObjectMacros.h"
 #include "Engine/DeveloperSettings.h"
 
-#include "ShadingSettings.generated.h"
+#include "EphemereSettings.generated.h"
 
-class UShadingSettings;
+class UEphemereSettings;
 
 /**
-* Settings for shading properties.
+* Additionnal settings to control the rendering of the engine depending on the game.
 */
 
-UCLASS(config = Engine, defaultconfig, meta = (DisplayName = "Shading Settings"))
-class ENGINE_API UShadingSettings : public UDeveloperSettings
+UCLASS(config = Engine, defaultconfig, meta = (DisplayName = "Ephemere Settings"))
+class ENGINE_API UEphemereSettings : public UDeveloperSettings
 {
 	GENERATED_UCLASS_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, config, Category = General, meta = (DisplayName = "Shading Curve Atlas",
+	UPROPERTY(EditAnywhere, config, Category = Shading, meta = (DisplayName = "Shading Curve Atlas",
 		ToolTip = "Linear color curve altas to pick the curve used for shading calculations.",
 		ConfigRestartRequired = false))
 	TSoftObjectPtr<UCurveLinearColorAtlas> ShadingCurveAtlas;
