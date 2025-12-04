@@ -19,6 +19,9 @@ void UEphemereSettingsSubsystem::Initialize(FSubsystemCollectionBase& Collection
 	{
 		UE_LOG(LogInit, Error, TEXT("Can't load shading atlas, please check selected asset in project settings"));
 	}
+
+	// We get the max shading curves
+	MaxShadingCurves = EphemereSettingsSettings->MaxShadingCurves;
 }
 
 void UEphemereSettingsSubsystem::Deinitialize()
@@ -32,7 +35,17 @@ void UEphemereSettingsSubsystem::UpdateShadingCurveAtlas(UCurveLinearColorAtlas*
 	ShadingCurveAtlas = InAtlas;
 }
 
+void UEphemereSettingsSubsystem::UpdateMaxShadingCurves(int32 InMaxShadingCurves)
+{
+	MaxShadingCurves = InMaxShadingCurves;
+}
+
 UCurveLinearColorAtlas* UEphemereSettingsSubsystem::GetShadingCurveAtlas() const
 {
 	return ShadingCurveAtlas;
+}
+
+int32 UEphemereSettingsSubsystem::GetMaxShadingCurves() const
+{
+	return MaxShadingCurves;
 }

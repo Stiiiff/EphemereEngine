@@ -29,5 +29,11 @@ void UEphemereSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 			}
 
 		}
+		// If the changed property is MaxShadingCurves
+		else if (PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(UEphemereSettings, MaxShadingCurves))
+		{
+			UEphemereSettingsSubsystem* EphemereSettingsSubsystem = GEngine->GetEngineSubsystem<UEphemereSettingsSubsystem>();
+			EphemereSettingsSubsystem->UpdateMaxShadingCurves(MaxShadingCurves);
+		}
 	}
 }

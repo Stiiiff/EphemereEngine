@@ -32,8 +32,18 @@ public:
 	// Update the reference of the shading curve atlas
 	void UpdateShadingCurveAtlas(UCurveLinearColorAtlas* InAtlas);
 
+	// Getter for the max shading curves
+	int32 GetMaxShadingCurves() const;
+
+	// Update the max shading curves
+	void UpdateMaxShadingCurves(int32 InMaxShadingCurves);
+
 private:
 	// The reference to the shading linear color curve atlas
 	UPROPERTY()
 	UCurveLinearColorAtlas* ShadingCurveAtlas;
+
+	// The reference to the max shading curves
+	UPROPERTY()
+	int32 MaxShadingCurves;
 };

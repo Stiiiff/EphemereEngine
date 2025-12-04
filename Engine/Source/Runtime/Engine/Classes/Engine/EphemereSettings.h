@@ -25,6 +25,11 @@ public:
 		ConfigRestartRequired = false))
 	TSoftObjectPtr<UCurveLinearColorAtlas> ShadingCurveAtlas;
 
+	UPROPERTY(EditAnywhere, config, Category = Shading, meta = (DisplayName = "Curve Atlas Size",
+		ToolTip = "Control the max number of shading curve.",
+		ConfigRestartRequired = true))
+	int32 MaxShadingCurves = 64;
+
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
