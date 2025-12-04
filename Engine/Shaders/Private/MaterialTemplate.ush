@@ -16,6 +16,7 @@
 #include "/Engine/Private/PhysicsFieldSampler.ush"
 #include "/Engine/Private/SceneData.ush"
 #include "/Engine/Private/HairShadingCommon.ush"
+#include "/Engine/Private/ShadingCommon.ush"
 #include "/Engine/Private/HairStrands/HairCardsAttributeCommon.ush"
 #include "/Engine/Private/HairStrands/HairStrandsAttributeCommon.ush"
 
@@ -1951,7 +1952,7 @@ half3 GetMaterialTangent(FPixelMaterialInputs PixelMaterialInputs)
 
 uint GetMaterialShadingShape(FPixelMaterialInputs PixelMaterialInputs)
 {
-	return max(PixelMaterialInputs.ShadingShape, 0.0f);
+	return clamp(PixelMaterialInputs.ShadingShape, 0.0f, CURVE_ATLAS_MAXID);
 }
 
 half3 GetMaterialEmissiveRaw(FPixelMaterialInputs PixelMaterialInputs)
