@@ -14,6 +14,6 @@ class FEphemereUtilityModule : public IModuleInterface
     void InjectGlobalDefines(FShaderCompilerEnvironment& OutEnv)
     {
         const UEphemereSettings* Settings = GetDefault<UEphemereSettings>
-        OutEnv.SetDefine(TEXT("CURVE_ATLAS_MAXID"), 64)
+        OutEnv.SetDefine(TEXT("CURVE_ATLAS_MAXID"), Settings->MaxShadingCurves)
     }
 }

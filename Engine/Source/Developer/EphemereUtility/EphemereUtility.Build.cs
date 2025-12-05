@@ -6,6 +6,19 @@ public class EphemereUtilityModule : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "RenderCore", "RHI", "Projects"});
-    }
+        PublicDependencyModuleNames.AddRange(
+				new string[] 
+				{ 
+					"Core",
+					"Engine",
+					"RenderCore", 
+					"RHI"});
+
+		PrivateDependencyModuleNames.AddRange(
+				new string[]
+				{
+					"Projects",
+				}
+			);
+	}
 }
