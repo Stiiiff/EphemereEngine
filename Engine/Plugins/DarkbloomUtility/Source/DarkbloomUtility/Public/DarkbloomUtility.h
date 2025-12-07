@@ -11,5 +11,6 @@ public:
 
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
+	virtual void InjectGlobalDefines(FShaderCompilerEnvironment& OutEnv) const;
 	virtual void ShutdownModule() override;
 };

@@ -8,13 +8,15 @@
 
 void FDarkbloomUtilityModule::StartupModule()
 {
-	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
+	FShaderCompilerEnvironment::ModifyCompilationEnvironment.AddRaw(
+		this, &FDarkbloomUtilityModule::InjectGlobalDefines);
+}
+
+void FDarkbloomUtilityModule::InjectGlobalDefines(FShaderCompilerEnvironment& OutEnv) const
+{
 	const UEphemereSettings* Settings = GetDefault<UEphemereSettings>();
 	int32 MaxShadingCurves = Settings->MaxShadingCurves;
-
-	// Defines
-
-
+	OutEnv.SetDefine(TEXT("MAX_SHADING_CURVES"), MaxShadingCurves);
 }
 
 void FDarkbloomUtilityModule::ShutdownModule()
