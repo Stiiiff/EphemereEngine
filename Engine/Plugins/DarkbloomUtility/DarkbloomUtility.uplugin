@@ -2,10 +2,10 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "DarkbloomGeneric",
-	"Description": "Generic content used throughout all the Darkbloom Visuals Projects",
+	"FriendlyName": "DarkbloomUtility",
+	"Description": "Utility Plugin to link project settings to code and more",
 	"Category": "Other",
-	"CreatedBy": "DarkbloomVisuals",
+	"CreatedBy": "DarkbloomVisual",
 	"CreatedByURL": "stephane_angenault.artstation.com",
 	"DocsURL": "",
 	"MarketplaceURL": "",
@@ -13,6 +13,13 @@
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
-	"Installed": true,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "DarkbloomUtility",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
 	"EnabledByDefault": true
 }
