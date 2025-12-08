@@ -11,11 +11,6 @@ public class DarkbloomUtility : ModuleRules
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
-				"Core",
-				"CoreUObject",
-				"Engine",
-				"RenderCore",
-				"ShaderCore"
 			}
 			);
 				

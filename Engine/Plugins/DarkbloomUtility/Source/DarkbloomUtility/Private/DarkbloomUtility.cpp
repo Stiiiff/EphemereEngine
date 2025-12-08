@@ -8,15 +8,14 @@
 
 void FDarkbloomUtilityModule::StartupModule()
 {
-	FShaderCompilerEnvironment::ModifyCompilationEnvironment.AddRaw(
-		this, &FDarkbloomUtilityModule::InjectGlobalDefines);
+	FDarkbloomUtilityModule& InjectGlobalDefines();
 }
 
 void FDarkbloomUtilityModule::InjectGlobalDefines(FShaderCompilerEnvironment& OutEnv) const
 {
 	const UEphemereSettings* Settings = GetDefault<UEphemereSettings>();
 	int32 MaxShadingCurves = Settings->MaxShadingCurves;
-	OutEnv.SetDefine(TEXT("MAX_SHADING_CURVES"), MaxShadingCurves);
+	OutEnv.SetDefine(TEXT("CURVE_ATLAS_MAXID"), MaxShadingCurves);
 }
 
 void FDarkbloomUtilityModule::ShutdownModule()

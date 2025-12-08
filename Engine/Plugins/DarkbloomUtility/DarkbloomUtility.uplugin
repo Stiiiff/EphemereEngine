@@ -18,7 +18,7 @@
 		{
 			"Name": "DarkbloomUtility",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "PreDefault"
 		}
 	],
 	"EnabledByDefault": true
