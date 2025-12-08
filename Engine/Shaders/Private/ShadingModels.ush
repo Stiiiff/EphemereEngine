@@ -213,7 +213,7 @@ FDirectLighting DefaultLitBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L,
 
 	FDirectLighting Lighting;
 	
-	float CurveIndex = float(GBuffer.ShadingShape)/64;
+	float CurveIndex = float(GBuffer.ShadingShape) / CURVE_ATLAS_MAXID; // Curve Atlas Max size defined in ShadingCommon.ush
 
 	float2 DiffuseCoord = float2(NoL, CurveIndex);
 	
@@ -221,7 +221,7 @@ FDirectLighting DefaultLitBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L,
 	Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * NoL) * Diffuse_Lambert(GBuffer.DiffuseColor);
 #else
 	#if 0 // Experiment
-	Lighting.Diffuse = float(GBuffer.ShadingShape) / 64;
+		Lighting.Diffuse = float(GBuffer.ShadingShape) / CURVE_ATLAS_MAXID; // Curve Atlas Max size defined in ShadingCommon.ush
 	#else
 		Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * Texture2DSample(View.ShadingAtlas, View.ShadingSampler, DiffuseCoord).r) * Diffuse_Lambert(GBuffer.DiffuseColor);
 	#endif

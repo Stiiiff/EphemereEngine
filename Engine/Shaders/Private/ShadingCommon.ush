@@ -31,7 +31,7 @@
 #define HAIR_COMPONENT_TT_MODEL  	0x40u
 
 // Shading Curve Atlas index max size
-#define CURVE_ATLAS_MAXID 64
+#define CURVE_ATLAS_MAXID 8
 
 // for debugging and to visualize
 float3 GetShadingModelColor(uint ShadingModelID)
@@ -84,6 +84,8 @@ float3 GetShadingShapeColor(uint ShadingShapeID)
 			return float3(0.7f, 1.0f, 1.0f);
 		case 7:
 			return float3(0.3f, 1.0f, 1.0f);
+		default:
+			return float3(1.0f, 1.0f, 1.0);
 	}
 }
 
