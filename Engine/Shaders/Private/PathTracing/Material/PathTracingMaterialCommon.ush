@@ -149,7 +149,7 @@ bool IsMaterialTransmissive(FMaterialClosestHitPayload HitInfo)
 
 bool IsSubsurfaceMaterial(FMaterialClosestHitPayload HitInfo)
 {
-	return HitInfo.ShadingModelID == SHADINGMODELID_ICE ||
+	return HitInfo.ShadingModelID == SHADINGMODELID_THICKTRANSLUCENT ||
 		   HitInfo.ShadingModelID == SHADINGMODELID_SKIN;
 }
 

@@ -16,11 +16,11 @@
 #endif
 
 // Must match ESceneTextureId
-#define PPI_PostProcessInput0 12
-#define PPI_PostProcessInput1 13
-#define PPI_PostProcessInput2 14
-#define PPI_PostProcessInput3 15
-#define PPI_PostProcessInput4 16
+#define PPI_PostProcessInput0 13
+#define PPI_PostProcessInput1 14
+#define PPI_PostProcessInput2 15
+#define PPI_PostProcessInput3 16
+#define PPI_PostProcessInput4 17
 
 SCREEN_PASS_TEXTURE_VIEWPORT(PostProcessInput_0) 
 SCREEN_PASS_TEXTURE_VIEWPORT(PostProcessInput_1)

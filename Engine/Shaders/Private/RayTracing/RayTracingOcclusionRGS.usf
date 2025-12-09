@@ -341,7 +341,7 @@ FOcclusionResult ComputeOcclusion(
 		WorldNormal = LightDirection;
 		bApplyNormalCulling = false;
 	}
-	else if (ShadingModelID == SHADINGMODELID_ICE || ShadingModelID == SHADINGMODELID_FOLIAGE)
+	else if (ShadingModelID == SHADINGMODELID_THICKTRANSLUCENT || ShadingModelID == SHADINGMODELID_FOLIAGE)
 	{
 		bApplyNormalCulling = false;
 	}
@@ -460,7 +460,7 @@ FOcclusionResult ComputeOcclusion(
 			Out.SumRayDistance += HitT;
 			Out.HitCount += 1.0;
 
-			if (ShadingModelID == SHADINGMODELID_ICE || ShadingModelID == SHADINGMODELID_HAIR)
+				if (ShadingModelID == SHADINGMODELID_THICKTRANSLUCENT || ShadingModelID == SHADINGMODELID_HAIR)
 			{
 				// Reverse the ray to support sub-surface casts
 				RayDesc InvertedRay = Invert(Ray);
@@ -510,7 +510,7 @@ FOcclusionResult ComputeOcclusion(
 	while (0);
 #endif // ENABLE_MULTIPLE_SAMPLES_PER_PIXEL
 
-	if (ShadingModelID == SHADINGMODELID_ICE || ShadingModelID == SHADINGMODELID_HAIR)
+	if (ShadingModelID == SHADINGMODELID_THICKTRANSLUCENT || ShadingModelID == SHADINGMODELID_HAIR)
 	{
 		float Depth = length(WorldPosition - View.WorldCameraOrigin);
 		float Range = LODTransitionEnd - LODTransitionStart;
@@ -566,7 +566,7 @@ RAY_TRACING_ENTRY_RAYGEN(OcclusionRGS)
 				TransmissionProfileParams = GetTransmissionProfileParams(GBufferData);
 			}
 
-			if (ShadingModelID == SHADINGMODELID_ICE)
+			if (ShadingModelID == SHADINGMODELID_THICKTRANSLUCENT)
 			{
 				TransmissionProfileParams.ExtinctionScale = GBufferData.CustomData.a;
 			}

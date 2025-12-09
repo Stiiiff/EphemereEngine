@@ -20,7 +20,6 @@ UPixelInspectorView::UPixelInspectorView(const FObjectInitializer& ObjectInitial
 	MaterialShadingModel = EMaterialShadingModel::MSM_Lit;
 	SelectiveOutputMask = 0;
 	BaseColor = FLinearColor::Black;
-	ObjectNormal = FVector(0.0f);
 	IndirectIrradiance = 0.0f;
 	AmbientOcclusion = 0.0f;
 
@@ -67,7 +66,6 @@ void UPixelInspectorView::SetFromResult(PixelInspector::PixelInspectorResult &Re
 	MaterialShadingModel = Result.ShadingModel;
 	SelectiveOutputMask = Result.SelectiveOutputMask;
 	BaseColor = Result.BaseColor;
-	ObjectNormal = Result.ObjectNormal;
 	IndirectIrradiance = Result.IndirectIrradiance;
 	AmbientOcclusion = Result.AmbientOcclusion;
 

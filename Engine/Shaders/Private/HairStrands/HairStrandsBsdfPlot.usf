@@ -94,7 +94,6 @@ void MainPS(
 	TransmittanceData.OpaqueVisibility = 1;
 
 	const float Backlit = 1;
-	const float3 ObjectNormal = float3(0,0,1);
 	FGBufferData HairGBuffer = (FGBufferData)0;
 	HairGBuffer.WorldNormal = T;
 	HairGBuffer.BaseColor = BaseColor.xxx;
@@ -102,7 +101,6 @@ void MainPS(
 	HairGBuffer.ShadingModelID = SHADINGMODELID_HAIR;
 	HairGBuffer.DiffuseColor = 0;
 	HairGBuffer.SpecularColor = 0;
-	HairGBuffer.ObjectNormal = ObjectNormal;
 	HairGBuffer.Depth = 0.5f;
 	HairGBuffer.GBufferAO = 1;
 	HairGBuffer.CustomData = float4(0,0,Backlit,0);

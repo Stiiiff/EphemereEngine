@@ -159,7 +159,7 @@ void Main(
 #endif
 		half  Specular = 0.2;
 		float Roughness = GetMaterialRoughnessRaw(PixelMaterialInputs);
-		half3 Normal = GetMaterialNormalRaw(PixelMaterialInputs);
+		half3 Normal = GetMaterialNormalRaw(MaterialParameters, PixelMaterialInputs);
 		half3 Emissive = GetMaterialEmissiveRaw(PixelMaterialInputs);
 		half Opacity = GetMaterialOpacityRaw(PixelMaterialInputs);
 #if MATERIALBLENDING_MASKED || (DECAL_BLEND_MODE == DECALBLENDMODEID_VOLUMETRIC)

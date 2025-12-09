@@ -112,7 +112,7 @@ void FBufferVisualizationData::ConfigureConsoleCommand()
 
 	IConsoleManager::Get().RegisterConsoleVariable(
 		TEXT("r.BufferVisualizationOverviewTargets"),
-		TEXT("BaseColor,ObjectNormal,WorldNormal,Roughness,SubsurfaceColor,,,WorldTangent,SeparateTranslucencyA,,,Opacity,SceneDepth,,,ShadingModel,SeparateTranslucencyRGB,SceneDepthWorldUnits,SceneColor,PreTonemapHDRColor,PostTonemapHDRColor"),
+		TEXT("BaseColor,SceneColor,WorldNormal,Roughness,SubsurfaceColor,,,WorldTangent,SeparateTranslucencyA,,,Opacity,SceneDepth,Metallic,ShadingShape,ShadingModel,SeparateTranslucencyRGB,SceneDepthWorldUnits,PreTonemapHDRColor,PostTonemapHDRColor"),
 		*ConsoleDocumentationOverviewTargets,
 		ECVF_Default
 		);

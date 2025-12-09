@@ -132,7 +132,7 @@ float3 SkyLightDiffuse(FGBufferData GBuffer, float AmbientOcclusion, float2 Buff
 		Lighting += ScalarFactors * SubsurfaceLookup * SubsurfaceColor;
 	}
 
-	if (GBuffer.ShadingModelID == SHADINGMODELID_ICE || GBuffer.ShadingModelID == SHADINGMODELID_SKIN)
+	if (GBuffer.ShadingModelID == SHADINGMODELID_THICKTRANSLUCENT || GBuffer.ShadingModelID == SHADINGMODELID_SKIN)
 	{
 		float3 SubsurfaceColor = ExtractSubsurfaceColor(GBuffer);
 		// Add subsurface energy to diffuse

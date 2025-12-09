@@ -68,7 +68,7 @@ FString GetShadingModelString(EMaterialShadingModel ShadingModel)
 		case MSM_Metal:				ShadingModelName = TEXT("MSM_Metal"); break;
 		case MSM_Foliage:			ShadingModelName = TEXT("MSM_Foliage"); break;
 		case MSM_Clothing:			ShadingModelName = TEXT("MSM_Clothing"); break;
-		case MSM_Ice:				ShadingModelName = TEXT("MSM_Ice"); break;
+		case MSM_ThickTranslucent:	ShadingModelName = TEXT("MSM_ThickTranslucent"); break;
 		default: ShadingModelName = TEXT("Unknown"); break;
 	}
 	return ShadingModelName;
@@ -153,7 +153,7 @@ void UpdateMaterialShaderCompilingStats(const FMaterial* Material)
 	{
 		INC_DWORD_STAT_BY(STAT_ShaderCompiling_NumUnlitMaterialShaders, 1);
 	}
-	else if (ShadingModels.HasAnyShadingModel({ MSM_Lit, MSM_Skin, MSM_Metal, MSM_Clothing, MSM_Foliage,  MSM_Ice }))
+	else if (ShadingModels.HasAnyShadingModel({ MSM_Lit, MSM_Skin, MSM_Metal, MSM_Clothing, MSM_Foliage,  MSM_ThickTranslucent }))
 	{
 		INC_DWORD_STAT_BY(STAT_ShaderCompiling_NumLitMaterialShaders, 1);
 	}

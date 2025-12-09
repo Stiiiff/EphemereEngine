@@ -919,7 +919,7 @@ EPixelFormat FSceneRenderTargets::GetGBufferAFormat() const
 	// good to profile the impact of non 8 bit formats
 	const bool bEnforce8BitPerChannel = (CurrentGBufferFormat == EGBufferFormat::Force8BitsPerChannel);
 
-	EPixelFormat NormalGBufferFormat = bHighPrecisionGBuffers ? PF_FloatRGBA : PF_A2B10G10R10;
+	EPixelFormat NormalGBufferFormat = bHighPrecisionGBuffers ? PF_FloatRGBA : PF_B8G8R8A8;
 
 	if (bEnforce8BitPerChannel)
 	{
@@ -937,21 +937,10 @@ EPixelFormat FSceneRenderTargets::GetGBufferBFormat() const
 {
 	// good to see the quality loss due to precision in the gbuffer
 	const bool bHighPrecisionGBuffers = (CurrentGBufferFormat >= EGBufferFormat::Force16BitsPerChannel);
-	// good to profile the impact of non 8 bit formats
-	const bool bEnforce8BitPerChannel = (CurrentGBufferFormat == EGBufferFormat::Force8BitsPerChannel);
 
-	EPixelFormat NormalGBufferFormat = bHighPrecisionGBuffers ? PF_FloatRGBA : PF_B8G8R8A8;
+	const EPixelFormat ShadingGBufferFormat = bHighPrecisionGBuffers ? PF_FloatRGBA : PF_B8G8R8A8;
 
-	if (bEnforce8BitPerChannel)
-	{
-		NormalGBufferFormat = PF_B8G8R8A8;
-	}
-	else if (CurrentGBufferFormat == EGBufferFormat::HighPrecisionNormals)
-	{
-		NormalGBufferFormat = PF_FloatRGBA;
-	}
-
-	return NormalGBufferFormat;
+	return ShadingGBufferFormat;
 }
 
 EPixelFormat FSceneRenderTargets::GetGBufferCFormat() const

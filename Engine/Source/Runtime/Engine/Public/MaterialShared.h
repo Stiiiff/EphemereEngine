@@ -91,7 +91,7 @@ extern FName GetMaterialQualityLevelFName(EMaterialQualityLevel::Type InMaterial
 inline bool IsSubsurfaceShadingModel(FMaterialShadingModelField ShadingModel)
 {
 	return ShadingModel.HasShadingModel(MSM_Skin) || ShadingModel.HasShadingModel(MSM_Foliage) ||
-		ShadingModel.HasShadingModel(MSM_Clothing) || ShadingModel.HasShadingModel(MSM_Ice);
+		ShadingModel.HasShadingModel(MSM_Clothing) || ShadingModel.HasShadingModel(MSM_ThickTranslucent);
 }
 
 inline bool UseSubsurfaceProfile(FMaterialShadingModelField ShadingModel)
@@ -620,7 +620,6 @@ public:
 			IsSceneTextureUsed(PPI_SpecularColor) ||
 			IsSceneTextureUsed(PPI_SubsurfaceColor) ||
 			IsSceneTextureUsed(PPI_BaseColor) ||
-			IsSceneTextureUsed(PPI_ObjectNormal) ||
 			IsSceneTextureUsed(PPI_WorldNormal) ||
 			IsSceneTextureUsed(PPI_WorldTangent) ||
 			IsSceneTextureUsed(PPI_Opacity) ||
@@ -630,8 +629,6 @@ public:
 			IsSceneTextureUsed(PPI_DecalMask) ||
 			IsSceneTextureUsed(PPI_ShadingModelColor) ||
 			IsSceneTextureUsed(PPI_ShadingModelID) ||
-			IsSceneTextureUsed(PPI_StoredBaseColor) ||
-			IsSceneTextureUsed(PPI_StoredSpecular) ||
 			IsSceneTextureUsed(PPI_Velocity);
 	}
 
@@ -710,7 +707,6 @@ namespace EMaterialShaderMapUsage
 		MaterialExportSpecular,
 		MaterialExportNormal,
 		MaterialExportTangent,
-		MaterialExportObjectNormal,
 		MaterialExportRoughness,
 		MaterialExportAnisotropy,
 		MaterialExportAO,
@@ -1686,6 +1682,7 @@ public:
 	virtual bool IsCrackFreeDisplacementEnabled() const { return false; }
 	virtual bool IsAdaptiveTessellationEnabled() const { return false; }
 	virtual bool IsFullyRough() const { return false; }
+	virtual bool UseCustomNormal() const { return false; }
 	virtual bool UseNormalCurvatureToRoughness() const { return false; }
 	virtual bool IsUsingFullPrecision() const { return false; }
 	virtual bool IsUsingAlphaToCoverage() const { return false; }
@@ -1732,7 +1729,6 @@ public:
 	virtual uint32 GetMaterialDecalResponse() const { return 0; }
 	virtual bool HasBaseColorConnected() const { return false; }
 	virtual bool HasNormalConnected() const { return false; }
-	virtual bool HasObjectNormalConnected() const { return false; }
 	virtual bool HasRoughnessConnected() const { return false; }
 	virtual bool HasEmissiveColorConnected() const { return false; }
 	virtual bool HasAnisotropyConnected() const { return false; }
@@ -2542,6 +2538,7 @@ public:
 	ENGINE_API virtual bool IsCrackFreeDisplacementEnabled() const override;
 	ENGINE_API virtual bool IsAdaptiveTessellationEnabled() const override;
 	ENGINE_API virtual bool IsFullyRough() const override;
+	ENGINE_API virtual bool UseCustomNormal() const override;
 	ENGINE_API virtual bool UseNormalCurvatureToRoughness() const override;
 	ENGINE_API virtual bool IsUsingFullPrecision() const override;
 	ENGINE_API virtual bool IsUsingAlphaToCoverage() const override;
@@ -2557,7 +2554,6 @@ public:
 	ENGINE_API virtual uint32 GetMaterialDecalResponse() const override;
 	ENGINE_API virtual bool HasBaseColorConnected() const override;
 	ENGINE_API virtual bool HasNormalConnected() const override;
-	ENGINE_API virtual bool HasObjectNormalConnected() const override;
 	ENGINE_API virtual bool HasRoughnessConnected() const override;
 	ENGINE_API virtual bool HasEmissiveColorConnected() const override;
 	ENGINE_API virtual bool HasAnisotropyConnected() const override;

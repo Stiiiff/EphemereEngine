@@ -473,7 +473,6 @@ void MainCS(uint2 DispatchThreadId : SV_DispatchThreadID)
 		GBuffer.WorldNormal = Sample.Tangent;
 		GBuffer.BaseColor = Sample.BaseColor;
 		GBuffer.Roughness = Sample.Roughness;
-		GBuffer.ObjectNormal = Sample.ObjectNormal;
 
 		const uint MacroGroupIndex = clamp(Sample.MacroGroupId, 0, MAX_HAIR_MACROGROUP_COUNT - 1);
 

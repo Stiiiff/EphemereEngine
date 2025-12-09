@@ -144,7 +144,7 @@ void MainVisibility(
 		Backlit			 = GetMaterialCustomData0(MaterialParameters);
 		float MaterialAO = GetMaterialAmbientOcclusion(PixelMaterialInputs);
 
-		Tangent = mul(normalize(GetMaterialNormalRaw(PixelMaterialInputs)), MaterialParameters.TangentToWorld);
+		Tangent = mul(normalize(GetMaterialNormalRaw(MaterialParameters, PixelMaterialInputs)), MaterialParameters.TangentToWorld);
 	}
 	{
 		Velocity = Calculate3DVelocity(PackedVelocityA, PackedVelocityC).xy;

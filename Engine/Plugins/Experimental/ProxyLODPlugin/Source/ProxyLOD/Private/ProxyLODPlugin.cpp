@@ -566,10 +566,6 @@ static FIntPoint GetTexelGridSize(const  FMaterialProxySettings& MaterialSetting
 		{
 			MaxTextureSize = MaxBBox(MaxTextureSize, MaterialSettings.NormalTextureSize);
 		}
-		if (MaterialSettings.bObjectNormalMap)
-		{
-			MaxTextureSize = MaxBBox(MaxTextureSize, MaterialSettings.ObjectNormalTextureSize);
-		}
 		if (MaterialSettings.bRoughnessMap)
 		{
 			MaxTextureSize = MaxBBox(MaxTextureSize, MaterialSettings.RoughnessTextureSize);

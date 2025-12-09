@@ -10,7 +10,7 @@
 #define SHADINGMODELID_FOLIAGE				4
 #define SHADINGMODELID_HAIR					5
 #define SHADINGMODELID_CLOTHING				6
-#define SHADINGMODELID_ICE					7
+#define SHADINGMODELID_THICKTRANSLUCENT		7
 #define SHADINGMODELID_NUM					8
 #define SHADINGMODELID_MASK					0xF		// 4 bits reserved for ShadingModelID			
 
@@ -30,6 +30,9 @@
 #define HAIR_COMPONENT_MULTISCATTER	0x20u
 #define HAIR_COMPONENT_TT_MODEL  	0x40u
 
+// Shading Curve Atlas index max size
+#define CURVE_ATLAS_MAXID 8
+
 // for debugging and to visualize
 float3 GetShadingModelColor(uint ShadingModelID)
 {
@@ -43,7 +46,7 @@ float3 GetShadingModelColor(uint ShadingModelID)
 	else if (ShadingModelID == SHADINGMODELID_FOLIAGE) return float3(0.2f, 0.2f, 0.8f); // Blue
 	else if (ShadingModelID == SHADINGMODELID_HAIR) return float3(0.6f, 0.1f, 0.5f);
 	else if (ShadingModelID == SHADINGMODELID_CLOTHING) return float3(0.7f, 1.0f, 1.0f); 
-	else if (ShadingModelID == SHADINGMODELID_ICE) return float3(0.3f, 1.0f, 1.0f);
+	else if (ShadingModelID == SHADINGMODELID_THICKTRANSLUCENT) return float3(0.3f, 1.0f, 1.0f);
 	else return float3(1.0f, 1.0f, 1.0f); // White
 #else
 	switch(ShadingModelID)
@@ -51,14 +54,39 @@ float3 GetShadingModelColor(uint ShadingModelID)
 		case SHADINGMODELID_UNLIT: return float3(0.1f, 0.1f, 0.2f); // Dark Blue
 		case SHADINGMODELID_LIT: return float3(0.1f, 1.0f, 0.1f); // Green
 		case SHADINGMODELID_SKIN: return float3(0.6f, 0.4f, 0.1f); // Brown
-		case SHADINGMODELID_METAL: return float3(0.1f, 0.4f, 0.4f); // Brown
+		case SHADINGMODELID_METAL: return float3(0.1f, 0.4f, 0.4f); // Magenta
 		case SHADINGMODELID_FOLIAGE: return float3(0.2f, 0.2f, 0.8f); // Cyan
 		case SHADINGMODELID_HAIR: return float3(0.6f, 0.1f, 0.5f);
 		case SHADINGMODELID_CLOTHING: return float3(0.7f, 1.0f, 1.0f);
-		case SHADINGMODELID_ICE: return float3(0.3f, 1.0f, 1.0f);
+		case SHADINGMODELID_THICKTRANSLUCENT:return float3(0.3f, 1.0f, 1.0f);
 		default: return float3(1.0f, 1.0f, 1.0f); // White
 	}
 #endif
+}
+
+float3 GetShadingShapeColor(uint ShadingShapeID)
+{
+	switch (ShadingShapeID)
+	{
+		case 0:
+			return float3(0.1f, 0.1f, 0.2f);
+		case 1:
+			return float3(0.1f, 1.0f, 0.1f);
+		case 2:
+			return float3(0.6f, 0.4f, 0.1);
+		case 3:
+			return float3(0.2f, 0.2f, 0.8f);
+		case 4:
+			return float3(0.1f, 0.4f, 0.4f);
+		case 5:
+			return float3(0.6f, 0.1f, 0.5f);
+		case 6:
+			return float3(0.7f, 1.0f, 1.0f);
+		case 7:
+			return float3(0.3f, 1.0f, 1.0f);
+		default:
+			return float3(1.0f, 1.0f, 1.0);
+	}
 }
 
 

@@ -1698,9 +1698,6 @@ void MapFlattenMaterial(const EFlattenMaterialProperties PropertyType,
 	case EFlattenMaterialProperties::Diffuse:
 		TMapFlattenMaterial<EFlattenMaterialProperties::Diffuse>(DstRawMesh, SrcMeshAdapter, SuperSampledCorrespondenceGrid, SuperSampledDstUVGrid, DstUVGrid, InputMaterials, OutMaterial, UnresolvedSrcColor);
 		break;
-	case EFlattenMaterialProperties::ObjectNormal:
-		TMapFlattenMaterial<EFlattenMaterialProperties::ObjectNormal>(DstRawMesh, SrcMeshAdapter, SuperSampledCorrespondenceGrid, SuperSampledDstUVGrid, DstUVGrid, InputMaterials, OutMaterial);
-		break;
 	case EFlattenMaterialProperties::Roughness:
 		TMapFlattenMaterial<EFlattenMaterialProperties::Roughness>(DstRawMesh, SrcMeshAdapter, SuperSampledCorrespondenceGrid, SuperSampledDstUVGrid, DstUVGrid, InputMaterials, OutMaterial);
 		break;

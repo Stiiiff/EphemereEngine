@@ -3736,9 +3736,9 @@ UClass* FMaterialEditor::GetOnPromoteToParameterClass(const UEdGraphPin* TargetP
 		switch (propertyId)
 		{
 			case MP_Opacity:
-			case MP_ObjectNormal:
 			case MP_Roughness:
 			case MP_Anisotropy:
+			case MP_ShadingShape:
 			case MP_TessellationMultiplier:
 			case MP_CustomData0:
 			case MP_CustomData1:

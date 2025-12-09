@@ -124,8 +124,6 @@ protected:
 	/** Export material properties acessors **/
 	ECheckBoxState GetExportNormalMap() const;
 	void SetExportNormalMap(ECheckBoxState NewValue);
-	ECheckBoxState GetExportObjectNormalMap() const;
-	void SetExportObjectNormalMap(ECheckBoxState NewValue);
 	ECheckBoxState GetExportRoughnessMap() const;
 	void SetExportRoughnessMap(ECheckBoxState NewValue);
 

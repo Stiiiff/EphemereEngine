@@ -202,7 +202,7 @@ float3 DualSpecularGGX(float AverageRoughness, float Lobe0Roughness, float Lobe1
 	return (D * Vis) * F;
 }
 
-FDirectLighting DefaultLitBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L, float Falloff, float NoL, FAreaLight AreaLight, FShadowTerms Shadow )
+FDirectLighting DefaultLitBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L, float Falloff, float NoL, FAreaLight AreaLight, FShadowTerms Shadow)
 {
 	BxDFContext Context;
 
@@ -212,25 +212,27 @@ FDirectLighting DefaultLitBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L,
 	Context.NoV = saturate(abs( Context.NoV ) + 1e-5);
 
 	FDirectLighting Lighting;
-	float3 BlendedNormal = ReorientNormal(N, GBuffer.WorldNormal, GBuffer.ObjectNormal);
-	float NewNoL = saturate(dot(BlendedNormal, L));
+	
+	float CurveIndex = float(GBuffer.ShadingShape) / CURVE_ATLAS_MAXID; // Curve Atlas Max size defined in ShadingCommon.ush
+
+	float2 DiffuseCoord = float2(NoL, CurveIndex);
 	
 #if 0 // Old Shading Model Diffuse Lighting
 	Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * NoL) * Diffuse_Lambert(GBuffer.DiffuseColor);
 #else
 	#if 0 // Experiment
-		Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * smoothstep(NewNoL, 0, 0.35)) * Diffuse_Lambert(GBuffer.DiffuseColor);
+		Lighting.Diffuse = float(GBuffer.ShadingShape) / CURVE_ATLAS_MAXID; // Curve Atlas Max size defined in ShadingCommon.ush
 	#else
-		Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * smoothstep(NewNoL, 0, 0.35)) * Diffuse_Pastel(GBuffer.DiffuseColor, GBuffer.Roughness, Context.NoV, NewNoL, Context.VoH);
+		Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * Texture2DSample(View.ShadingAtlas, View.ShadingSampler, DiffuseCoord).r) * Diffuse_Lambert(GBuffer.DiffuseColor);
 	#endif
 #endif
 	
-#if 1 // Enable Specular
+#if 0 // Enable Specular
 
 	#if 0 // Old Shading Model Specular Lighting
 		Lighting.Specular = AreaLight.FalloffColor * (Falloff * NoL) * SpecularGGX(GBuffer.Roughness, GBuffer.SpecularColor, Context, NoL, AreaLight);
 	#else
-		Lighting.Specular = AreaLight.FalloffColor * (Falloff * smoothstep(NewNoL, 0, 0.35)) * SpecularGGX(GBuffer.Roughness, GBuffer.SpecularColor, Context, NoL, AreaLight);
+		Lighting.Specular = AreaLight.FalloffColor * (Falloff * smoothstep(NoL, 0, 0.35)) * SpecularGGX(GBuffer.Roughness, GBuffer.SpecularColor, Context, NoL, AreaLight);
 	#endif
 #else
 	Lighting.Specular = 0;
@@ -262,21 +264,18 @@ FDirectLighting MetalBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L, floa
 	Context.NoV = saturate(abs( Context.NoV ) + 1e-5);
 
 	FDirectLighting Lighting;
-	float3 NewN = (0, 0, 1);
-	float3 BlendedNormal = ReorientNormal(N, GBuffer.WorldNormal, GBuffer.ObjectNormal);
-	float NewNoL = saturate(dot(BlendedNormal, L));
 	
 #if 0 // Old Shading Model Diffuse Lighting
 	Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * NoL) * Diffuse_Lambert(GBuffer.DiffuseColor);
 #else
-	Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * smoothstep(NewNoL, 0, 0.35)) * Diffuse_Pastel(GBuffer.DiffuseColor, GBuffer.Roughness, Context.NoV, NewNoL, Context.VoH);
+	Lighting.Diffuse = AreaLight.FalloffColor * (Falloff * smoothstep(NoL, 0, 0.35)) * Diffuse_Pastel(GBuffer.DiffuseColor, GBuffer.Roughness, Context.NoV, NoL, Context.VoH);
 #endif
 
 	BRANCH
 	if (bHasAnisotropy)
 	{
 		//Lighting.Specular = GBuffer.WorldTangent * .5f + .5f;
-		Lighting.Specular = AreaLight.FalloffColor * (Falloff * NewNoL) * SpecularGGX(GBuffer.Roughness, GBuffer.Anisotropy, GBuffer.SpecularColor, Context, NoL, AreaLight);
+		Lighting.Specular = AreaLight.FalloffColor * (Falloff * NoL) * SpecularGGX(GBuffer.Roughness, GBuffer.Anisotropy, GBuffer.SpecularColor, Context, NoL, AreaLight);
 	}
 	else
 	{
@@ -286,7 +285,7 @@ FDirectLighting MetalBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L, floa
 		}
 		else
 		{
-			Lighting.Specular = AreaLight.FalloffColor * (Falloff * NewNoL) * SpecularGGX(GBuffer.Roughness, GBuffer.SpecularColor, Context, NoL, AreaLight);
+			Lighting.Specular = AreaLight.FalloffColor * (Falloff * NoL) * SpecularGGX(GBuffer.Roughness, GBuffer.SpecularColor, Context, NoL, AreaLight);
 		}
 	}
 
@@ -679,28 +678,27 @@ FDirectLighting ClothBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L, floa
 	Init( Context, N, V, L );
 	SphereMaxNoH( Context, AreaLight.SphereSinAlpha, true );
 	Context.NoV = saturate( abs( Context.NoV ) + 1e-5 );
-	float NewNoL = dot(GBuffer.ObjectNormal, L);
 	
 	float3 Spec1;
 	if( AreaLight.bIsRect )
 		Spec1 = RectGGXApproxLTC( GBuffer.Roughness, GBuffer.SpecularColor, N, V, AreaLight.Rect, AreaLight.Texture );
 	else
-		Spec1 = AreaLight.FalloffColor * (Falloff * NewNoL) * SpecularGGX( GBuffer.Roughness, GBuffer.SpecularColor, Context, NoL, AreaLight );
+		Spec1 = AreaLight.FalloffColor * (Falloff * NoL) * SpecularGGX( GBuffer.Roughness, GBuffer.SpecularColor, Context, NoL, AreaLight );
 
 	// Cloth - Asperity Scattering - Inverse Beckmann Layer
 	float D2 = D_InvGGX( Pow4( GBuffer.Roughness ), Context.NoH );
 	float Vis2 = Vis_Cloth( Context.NoV, NoL );
 	float3 F2 = F_Schlick( FuzzColor, Context.VoH );
-	float3 Spec2 = AreaLight.FalloffColor * (Falloff * NewNoL) * (D2 * Vis2) * F2;
+	float3 Spec2 = AreaLight.FalloffColor * (Falloff * NoL) * (D2 * Vis2) * F2;
 	
 	FDirectLighting Lighting;
 #if 1
-	float3 DiffuseModel = Diffuse_OrenNayar(GBuffer.DiffuseColor, GBuffer.Roughness, Context.NoV, NewNoL, Context.VoH);
+	float3 DiffuseModel = Diffuse_OrenNayar(GBuffer.DiffuseColor, GBuffer.Roughness, Context.NoV, NoL, Context.VoH);
 #else
 	float3 DiffuseModel = Diffuse_Lambert(GBuffer.DiffuseColor);
 #endif
 	
-	Lighting.Diffuse  = AreaLight.FalloffColor * (Falloff * NewNoL) * DiffuseModel;
+	Lighting.Diffuse  = AreaLight.FalloffColor * (Falloff * NoL) * DiffuseModel;
 	Lighting.Specular = lerp( Spec1, Spec2, Cloth );
 	Lighting.Transmission = 0;
 	return Lighting;
@@ -748,68 +746,6 @@ FDirectLighting TwoSidedBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L, f
 	return Lighting;
 }
 
-FDirectLighting EyeBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L, float Falloff, float NoL, FAreaLight AreaLight, FShadowTerms Shadow )
-{
-#if IRIS_NORMAL
-	const float2 CausticNormalDelta	= float2( GBuffer.StoredMetallic, GBuffer.StoredSpecular )	* 2 - (256.0/255.0);
-	const float2 IrisNormalDelta	= float2( GBuffer.CustomData.y, GBuffer.CustomData.z )		* 2 - (256.0/255.0);
-	const float  IrisMask = 1.0f - GBuffer.CustomData.w;
-
-	const float2 WorldNormalOct	= UnitVectorToOctahedron( GBuffer.WorldNormal );
-	const float3 CausticNormal	= OctahedronToUnitVector( WorldNormalOct + CausticNormalDelta );
-	const float3 IrisNormal		= OctahedronToUnitVector( WorldNormalOct + IrisNormalDelta );
-#else
-	const float3 IrisNormal		= OctahedronToUnitVector( GBuffer.CustomData.yz * 2 - 1 );
-	const float  IrisDistance	= GBuffer.StoredMetallic;
-	const float  IrisMask		= 1.0f - GBuffer.CustomData.w;
-
-	// Blend in the negative intersection normal to create some concavity
-	// Not great as it ties the concavity to the convexity of the cornea surface
-	// No good justification for that. On the other hand, if we're just looking to
-	// introduce some concavity, this does the job.
-	const float3 CausticNormal = normalize(lerp(IrisNormal, -N, IrisMask*IrisDistance));
-#endif
-
-	BxDFContext Context;
-	Init( Context, N, V, L );
-	SphereMaxNoH( Context, AreaLight.SphereSinAlpha, false );
-	Context.NoV = saturate( abs( Context.NoV ) + 1e-5 );
-	Context.VoH = AreaLight.bIsRect ? Context.NoV : Context.VoH;
-	
-	// F_Schlick
-	float F0 = 0.2 * 0.08;
-	float Fc = Pow5( 1 - Context.VoH );
-	float F = Fc + (1 - Fc) * F0;
-	
-	FDirectLighting Lighting;
-
-	if( AreaLight.bIsRect )
-	{
-		Lighting.Specular = RectGGXApproxLTC( GBuffer.Roughness, F0, N, V, AreaLight.Rect, AreaLight.Texture );
-	}
-	else
-	{
-		float a2 = Pow4( GBuffer.Roughness );
-		float Energy = EnergyNormalization( a2, Context.VoH, AreaLight );
-
-		// Generalized microfacet specular
-		float D = D_GGX( a2, Context.NoH ) * Energy;
-		float Vis = Vis_SmithJointApprox( a2, Context.NoV, NoL );
-		
-		Lighting.Specular = AreaLight.FalloffColor * (Falloff * NoL) * D * Vis * F;
-	}
-
-	float IrisNoL = saturate( dot( IrisNormal, L ) );
-	float Power = lerp( 12, 1, IrisNoL );
-	float Caustic = 0.8 + 0.2 * ( Power + 1 ) * pow( saturate( dot( CausticNormal, L ) ), Power );
-	float Iris = IrisNoL * Caustic;
-	float Sclera = NoL;
-	
-	Lighting.Diffuse = 0;
-	Lighting.Transmission = AreaLight.FalloffColor * ( Falloff * lerp( Sclera, Iris, IrisMask ) * (1 - F) ) * Diffuse_Lambert( GBuffer.DiffuseColor );
-	return Lighting;
-}
-
 FDirectLighting PreintegratedSkinBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L, float Falloff, float NoL, FAreaLight AreaLight, FShadowTerms Shadow )
 {
 	FDirectLighting Lighting = DefaultLitBxDF( GBuffer, N, V, L, Falloff, NoL, AreaLight, Shadow );
@@ -829,7 +765,7 @@ FDirectLighting IntegrateBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L, 
 	{
 		case SHADINGMODELID_LIT:
 			return DefaultLitBxDF( GBuffer, N, V, L, Falloff, NoL, AreaLight, Shadow );
-		case SHADINGMODELID_ICE:
+		case SHADINGMODELID_THICKTRANSLUCENT:
 			return SubsurfaceBxDF( GBuffer, N, V, L, Falloff, NoL, AreaLight, Shadow );
 		case SHADINGMODELID_SKIN:
 			return PreintegratedSkinBxDF( GBuffer, N, V, L, Falloff, NoL, AreaLight, Shadow );

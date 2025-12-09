@@ -926,6 +926,7 @@ UMaterial::UMaterial(const FObjectInitializer& ObjectInitializer)
 	
 	Opacity.Constant = 1.0f;
 	OpacityMask.Constant = 1.0f;
+	ShadingShape.Constant = 1.0f;
 #endif
 	OpacityMaskClipValue = 0.3333f;
 	bCastDynamicShadowAsMasked = false;
@@ -3337,10 +3338,6 @@ void UMaterial::BackwardsCompatibilityVirtualTextureOutputConversion()
 			{
 				OutputExpression->GetInput(0)->Connect(BaseColor.OutputIndex, BaseColor.Expression);
 			}
-			if (ObjectNormal.IsConnected())
-			{
-				OutputExpression->GetInput(1)->Connect(ObjectNormal.OutputIndex, ObjectNormal.Expression);
-			}
 			if (Roughness.IsConnected())
 			{
 				OutputExpression->GetInput(2)->Connect(Roughness.OutputIndex, Roughness.Expression);
@@ -3444,11 +3441,11 @@ void UMaterial::PostLoad()
 	DoMaterialAttributeReorder(&DiffuseColor_DEPRECATED, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&SpecularColor_DEPRECATED, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&BaseColor, UE4Ver, RenderObjVer);
-	DoMaterialAttributeReorder(&ObjectNormal, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&Roughness, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&Anisotropy, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&Normal, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&Tangent, UE4Ver, RenderObjVer);
+	DoMaterialAttributeReorder(&ShadingShape, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&EmissiveColor, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&Opacity, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&OpacityMask, UE4Ver, RenderObjVer);
@@ -3862,7 +3859,8 @@ bool UMaterial::CanEditChange(const FProperty* InProperty) const
 			PropertyName == GET_MEMBER_NAME_STRING_CHECKED(UMaterial, bUseLightmapDirectionality) ||
 			PropertyName == GET_MEMBER_NAME_STRING_CHECKED(UMaterial, bUseHQForwardReflections) ||
 			PropertyName == GET_MEMBER_NAME_STRING_CHECKED(UMaterial, bForwardBlendsSkyLightCubemaps) ||
-			PropertyName == GET_MEMBER_NAME_STRING_CHECKED(UMaterial, bUsePlanarForwardReflections)
+			PropertyName == GET_MEMBER_NAME_STRING_CHECKED(UMaterial, bUsePlanarForwardReflections) ||
+			PropertyName == GET_MEMBER_NAME_STRING_CHECKED(UMaterial, bUseCustomNormal)
 			)
 		{
 			return MaterialDomain == MD_Surface;
@@ -4885,11 +4883,11 @@ FExpressionInput* UMaterial::GetExpressionInputForProperty(EMaterialProperty InP
 		case MP_Opacity:				return &Opacity;
 		case MP_OpacityMask:			return &OpacityMask;
 		case MP_BaseColor:				return &BaseColor;
-		case MP_ObjectNormal:			return &ObjectNormal;
 		case MP_Roughness:				return &Roughness;
 		case MP_Anisotropy:				return &Anisotropy;
 		case MP_Normal:					return &Normal;
 		case MP_Tangent:				return &Tangent;
+		case MP_ShadingShape:			return &ShadingShape;
 		case MP_WorldPositionOffset:	return &WorldPositionOffset;
 		case MP_WorldDisplacement:		return &WorldDisplacement;
 		case MP_TessellationMultiplier:	return &TessellationMultiplier;
@@ -5389,7 +5387,6 @@ int32 UMaterial::CompilePropertyEx( FMaterialCompiler* Compiler, const FGuid& At
 	{
 		case MP_Opacity:				return Opacity.CompileWithDefault(Compiler, Property);
 		case MP_OpacityMask:			return OpacityMask.CompileWithDefault(Compiler, Property);
-		case MP_ObjectNormal:			return ObjectNormal.CompileWithDefault(Compiler, Property);
 		case MP_Roughness:				return Roughness.CompileWithDefault(Compiler, Property);
 		case MP_Anisotropy:				return Anisotropy.CompileWithDefault(Compiler, Property);
 		case MP_TessellationMultiplier:	return TessellationMultiplier.CompileWithDefault(Compiler, Property);
@@ -5402,6 +5399,7 @@ int32 UMaterial::CompilePropertyEx( FMaterialCompiler* Compiler, const FGuid& At
 		case MP_SubsurfaceColor:		return SubsurfaceColor.CompileWithDefault(Compiler, Property);
 		case MP_Normal:					return Normal.CompileWithDefault(Compiler, Property);
 		case MP_Tangent:				return Tangent.CompileWithDefault(Compiler, Property);
+		case MP_ShadingShape:			return	ShadingShape.CompileWithDefault(Compiler, Property);
 		case MP_WorldPositionOffset:	return WorldPositionOffset.CompileWithDefault(Compiler, Property);
 		case MP_WorldDisplacement:		return WorldDisplacement.CompileWithDefault(Compiler, Property);
 		case MP_PixelDepthOffset:		return PixelDepthOffset.CompileWithDefault(Compiler, Property);
@@ -5647,6 +5645,7 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 	bool bBlendableOutputAlpha,
 	bool bHasTessellation,
 	bool bHasRefraction,
+	bool bUseCustomNormal,
 	bool bUsesShadingModelFromMaterialExpression)
 {
 	if (Domain == MD_PostProcess)
@@ -5680,7 +5679,6 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 		case DBM_Translucent:
 			return InProperty == MP_EmissiveColor
 				|| InProperty == MP_Normal
-				|| InProperty == MP_ObjectNormal
 				|| InProperty == MP_BaseColor
 				|| InProperty == MP_Roughness
 				|| InProperty == MP_Opacity;
@@ -5688,7 +5686,6 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 		case DBM_Stain:
 			return InProperty == MP_EmissiveColor
 				|| InProperty == MP_Normal
-				|| InProperty == MP_ObjectNormal
 				|| InProperty == MP_BaseColor
 				|| InProperty == MP_Roughness
 				|| InProperty == MP_Opacity;
@@ -5704,14 +5701,12 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 
 		case DBM_AlphaComposite:
 			return InProperty == MP_EmissiveColor
-				|| InProperty == MP_ObjectNormal
 				|| InProperty == MP_BaseColor
 				|| InProperty == MP_Roughness
 				|| InProperty == MP_Opacity;
 
 		case DBM_DBuffer_AlphaComposite:
 			return InProperty == MP_EmissiveColor
-				|| InProperty == MP_ObjectNormal
 				|| InProperty == MP_BaseColor
 				|| InProperty == MP_Roughness
 				|| InProperty == MP_Opacity;
@@ -5720,7 +5715,6 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 			return InProperty == MP_Normal
 				|| InProperty == MP_BaseColor
 				|| InProperty == MP_Roughness
-				|| InProperty == MP_ObjectNormal
 				|| InProperty == MP_Opacity
 				|| InProperty == MP_EmissiveColor;
 
@@ -5746,14 +5740,12 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 		case DBM_DBuffer_ColorRoughness:
 			return InProperty == MP_BaseColor
 				|| InProperty == MP_Roughness
-				|| InProperty == MP_ObjectNormal
 				|| InProperty == MP_Opacity
 				|| InProperty == MP_EmissiveColor;
 
 		case DBM_DBuffer_NormalRoughness:
 			return InProperty == MP_Normal
 				|| InProperty == MP_Roughness
-				|| InProperty == MP_ObjectNormal
 				|| InProperty == MP_Opacity;
 
 		case DBM_DBuffer_Normal:
@@ -5762,13 +5754,11 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 
 		case DBM_DBuffer_Roughness:
 			return InProperty == MP_Roughness
-				|| InProperty == MP_ObjectNormal
 				|| InProperty == MP_Opacity;
 
 		case DBM_Volumetric_DistanceFunction:
 			return InProperty == MP_EmissiveColor
 				|| InProperty == MP_Normal
-				|| InProperty == MP_ObjectNormal
 				|| InProperty == MP_BaseColor
 				|| InProperty == MP_Roughness
 				|| InProperty == MP_OpacityMask;
@@ -5829,8 +5819,8 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 		Active = BlendMode == BLEND_Masked;
 		break;
 	case MP_BaseColor:
+	case MP_ShadingShape:
 	case MP_AmbientOcclusion:
-	case MP_ObjectNormal:
 		Active = ShadingModels.IsLit();
 		break;
 	case MP_Roughness:
@@ -5840,13 +5830,13 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 		Active = ShadingModels.HasAnyShadingModel({ MSM_Metal, MSM_Hair }) && (!bIsTranslucentBlendMode || !bIsVolumetricTranslucencyLightingMode);
 		break;
 	case MP_Normal:
-		Active = (ShadingModels.IsLit() && (!bIsTranslucentBlendMode || !bIsNonDirectionalTranslucencyLightingMode)) || bHasRefraction;
+		Active = (ShadingModels.IsLit() && bUseCustomNormal && (!bIsTranslucentBlendMode || !bIsVolumetricTranslucencyLightingMode)) || bHasRefraction;
 		break;
 	case MP_Tangent:
 		Active = ShadingModels.HasAnyShadingModel({  MSM_Metal, MSM_Hair }) && (!bIsTranslucentBlendMode || !bIsVolumetricTranslucencyLightingMode);
 		break;
 	case MP_SubsurfaceColor:
-		Active = ShadingModels.HasAnyShadingModel({ MSM_Skin, MSM_Foliage, MSM_Clothing, MSM_Ice });
+		Active = ShadingModels.HasAnyShadingModel({ MSM_Skin, MSM_Foliage, MSM_Clothing, MSM_ThickTranslucent });
 		break;
 	case MP_CustomData0:
 		Active = ShadingModels.HasAnyShadingModel({ MSM_Metal, MSM_Hair, MSM_Clothing });
@@ -5901,6 +5891,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 		D3D11TessellationMode != MTM_NoTessellation,
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 		Refraction.IsConnected(),
+		bUseCustomNormal,
 		IsShadingModelFromMaterialExpression());
 }
 #endif // WITH_EDITOR
@@ -5918,6 +5909,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 		D3D11TessellationMode != MTM_NoTessellation,
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 		Refraction.IsConnected(),
+		bUseCustomNormal,
 		DerivedMaterial->IsShadingModelFromMaterialExpression());
 }
 

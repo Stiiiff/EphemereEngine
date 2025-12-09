@@ -13,24 +13,22 @@ void SetGBufferForShadingModel(
 	in out FGBufferData GBuffer, 
 	in const FMaterialPixelParameters MaterialParameters,
 	const float Opacity,
-	const half3 BaseColor,
-	const half3  ObjectNormal,
+	const float3 BaseColor,
 	const float Roughness,
 	const float Anisotropy,
+	const uint ShadingShape,
 	const float3 SubsurfaceColor,
 	const float SubsurfaceProfile,
 	const float Dither,
 	const uint ShadingModel)
 {
 	
-	bool hasObjectNormalConnected = ObjectNormal != 0.0f;
-	
 	GBuffer.WorldNormal = MaterialParameters.WorldNormal;
 	GBuffer.WorldTangent = MaterialParameters.WorldTangent;
 	GBuffer.BaseColor = BaseColor;
-	GBuffer.ObjectNormal = hasObjectNormalConnected ? ObjectNormal : MaterialParameters.ObjectNormal;
 	GBuffer.Roughness = Roughness;
 	GBuffer.Anisotropy = Anisotropy;
+	GBuffer.ShadingShape = ShadingShape; 
 	GBuffer.ShadingModelID = ShadingModel;
 
 	// Calculate and set custom data for the shading models that need it
@@ -39,8 +37,8 @@ void SetGBufferForShadingModel(
 	if (false)
 	{
 	}
-#if MATERIAL_SHADINGMODEL_ICE
-	else if (ShadingModel == SHADINGMODELID_ICE)
+#if MATERIAL_SHADINGMODEL_THICKTRANSLUCENT
+	else if (ShadingModel == SHADINGMODELID_THICKTRANSLUCENT)
 	{
 		GBuffer.CustomData.rgb = EncodeSubsurfaceColor(SubsurfaceColor);
 		GBuffer.CustomData.a = Opacity;

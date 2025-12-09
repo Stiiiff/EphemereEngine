@@ -157,7 +157,7 @@ void FPixelInspectorDetailsCustomization::CustomizeDetails(IDetailLayoutBuilder&
 		}
 		break;
 		case MSM_Skin:
-		case MSM_Ice:
+		case MSM_ThickTranslucent:
 		case MSM_Foliage:
 		{
 			DetailBuilder.HideProperty(SubSurfaceProfileProp);

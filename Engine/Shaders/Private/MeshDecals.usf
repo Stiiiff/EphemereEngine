@@ -172,7 +172,6 @@ void FPixelShaderInOut_MainPS(
 
 	// Store the results in local variables and reuse instead of calling the functions multiple times.
 	half3 BaseColor = GetMaterialBaseColor(PixelMaterialInputs);
-	half3 ObjectNormal = GetMaterialObjectNormal(MaterialParameters, PixelMaterialInputs);
 	half Metallic = 0;
 #if MATERIAL_SHADINGMODEL_METAL
 		Metallic += 1;
@@ -197,7 +196,6 @@ void FPixelShaderInOut_MainPS(
 
 	GBufferData.WorldNormal = MaterialParameters.WorldNormal;
 	GBufferData.BaseColor = BaseColor;
-	GBufferData.ObjectNormal = ObjectNormal;
 	GBufferData.Roughness = GetMaterialRoughness(PixelMaterialInputs);
 	GBufferData.CustomData = 0;
 	GBufferData.IndirectIrradiance = 0;

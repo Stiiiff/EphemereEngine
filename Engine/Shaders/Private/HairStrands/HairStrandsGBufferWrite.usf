@@ -63,7 +63,7 @@ void MainPS(
 	else
 	{
 		float3 Samples_Tangent = 0;
-		float3 Samples_ObjectNormal = 0;
+		float3 Samples_Specular = 0;
 		float3 Samples_BaseColor = 0;
 		float  Samples_Roughnesss = 0;
 		uint   Samples_LightChannelMask = 0;
@@ -77,7 +77,7 @@ void MainPS(
 			const FHairSample Sample = UnpackHairSample(Data);
 
 			Samples_Tangent		+= Sample.Tangent;
-			Samples_ObjectNormal+= Sample.ObjectNormal;
+			Samples_Specular	+= Sample.Specular;
 			Samples_BaseColor	+= Sample.BaseColor;
 			Samples_Roughnesss	+= Sample.Roughness;
 			Samples_Backlit		+= Sample.Backlit;
@@ -90,7 +90,7 @@ void MainPS(
 
 		const float InvSampleCount = 1.f / max(1u, NodeDesc.Count);
 		Samples_Tangent		 = normalize(Samples_Tangent);
-		Samples_ObjectNormal*= InvSampleCount;
+		Samples_Specular	*= InvSampleCount;
 		Samples_BaseColor	*= InvSampleCount;
 		Samples_Roughnesss	*= InvSampleCount;
 		Samples_Backlit		*= InvSampleCount;
@@ -98,7 +98,7 @@ void MainPS(
 
 		WriteGBuffer(
 			Samples_Tangent,
-			Samples_ObjectNormal,
+			Samples_Specular,
 			Samples_BaseColor,
 			Samples_Roughnesss,
 			Samples_LightChannelMask,

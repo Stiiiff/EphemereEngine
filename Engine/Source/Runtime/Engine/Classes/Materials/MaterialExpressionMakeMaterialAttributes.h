@@ -18,9 +18,6 @@ class UMaterialExpressionMakeMaterialAttributes : public UMaterialExpression
 	FExpressionInput BaseColor;
 
 	UPROPERTY()
-	FExpressionInput ObjectNormal;
-
-	UPROPERTY()
 	FExpressionInput Roughness;
 
 	UPROPERTY()
@@ -40,6 +37,9 @@ class UMaterialExpressionMakeMaterialAttributes : public UMaterialExpression
 
 	UPROPERTY()
 	FExpressionInput Tangent;
+
+	UPROPERTY()
+	FExpressionInput ShadingShape;
 
 	UPROPERTY()
 	FExpressionInput WorldPositionOffset;

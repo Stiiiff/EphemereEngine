@@ -5659,7 +5659,6 @@ int32 UMaterialExpressionMakeMaterialAttributes::Compile(class FMaterialCompiler
 	switch (Property)
 	{
 	case MP_BaseColor: Ret = BaseColor.Compile(Compiler); Expression = BaseColor.Expression; break;
-	case MP_ObjectNormal: Ret = ObjectNormal.Compile(Compiler); Expression = ObjectNormal.Expression; break;
 	case MP_Roughness: Ret = Roughness.Compile(Compiler); Expression = Roughness.Expression; break;
 	case MP_Anisotropy: Ret = Anisotropy.Compile(Compiler); Expression = Anisotropy.Expression; break;
 	case MP_EmissiveColor: Ret = EmissiveColor.Compile(Compiler); Expression = EmissiveColor.Expression; break;
@@ -5667,6 +5666,7 @@ int32 UMaterialExpressionMakeMaterialAttributes::Compile(class FMaterialCompiler
 	case MP_OpacityMask: Ret = OpacityMask.Compile(Compiler); Expression = OpacityMask.Expression; break;
 	case MP_Normal: Ret = Normal.Compile(Compiler); Expression = Normal.Expression; break;
 	case MP_Tangent: Ret = Tangent.Compile(Compiler); Expression = Tangent.Expression; break;
+	case MP_ShadingShape: Ret = ShadingShape.Compile(Compiler); Expression = ShadingShape.Expression; break;
 	case MP_WorldPositionOffset: Ret = WorldPositionOffset.Compile(Compiler); Expression = WorldPositionOffset.Expression; break;
 	case MP_WorldDisplacement: Ret = WorldDisplacement.Compile(Compiler); Expression = WorldDisplacement.Expression; break;
 	case MP_TessellationMultiplier: Ret = TessellationMultiplier.Compile(Compiler); Expression = TessellationMultiplier.Expression; break;
@@ -5742,7 +5742,6 @@ UMaterialExpressionBreakMaterialAttributes::UMaterialExpressionBreakMaterialAttr
 
 	Outputs.Reset();
 	Outputs.Add(FExpressionOutput(TEXT("BaseColor"), 1, 1, 1, 1, 0));
-	Outputs.Add(FExpressionOutput(TEXT("ObjectNormal"), 1, 1, 1, 1, 0));
 	Outputs.Add(FExpressionOutput(TEXT("Roughness"), 1, 1, 0, 0, 0));
 	Outputs.Add(FExpressionOutput(TEXT("Anisotropy"), 1, 1, 0, 0, 0));
 	Outputs.Add(FExpressionOutput(TEXT("EmissiveColor"), 1, 1, 1, 1, 0));
@@ -5750,6 +5749,7 @@ UMaterialExpressionBreakMaterialAttributes::UMaterialExpressionBreakMaterialAttr
 	Outputs.Add(FExpressionOutput(TEXT("OpacityMask"), 1, 1, 0, 0, 0));
 	Outputs.Add(FExpressionOutput(TEXT("Normal"), 1, 1, 1, 1, 0));
 	Outputs.Add(FExpressionOutput(TEXT("Tangent"), 1, 1, 1, 1, 0));
+	Outputs.Add(FExpressionOutput(TEXT("ShadingShape"), 1, 1, 0, 0, 0));
 	Outputs.Add(FExpressionOutput(TEXT("WorldPositionOffset"), 1, 1, 1, 1, 0));
 	Outputs.Add(FExpressionOutput(TEXT("WorldDisplacement"), 1, 1, 1, 1, 0));
 	Outputs.Add(FExpressionOutput(TEXT("TessellationMultiplier"), 1, 1, 0, 0, 0));
@@ -5783,7 +5783,6 @@ void UMaterialExpressionBreakMaterialAttributes::Serialize(FStructuredArchive::F
 		int32 OutputIndex = 0;
 
 		Outputs[OutputIndex].SetMask(1, 1, 1, 1, 0); ++OutputIndex; // BaseColor
-		Outputs[OutputIndex].SetMask(1, 1, 1, 1, 0); ++OutputIndex; // ObjectNormal
 		Outputs[OutputIndex].SetMask(1, 1, 0, 0, 0); ++OutputIndex; // Roughness
 		Outputs[OutputIndex].SetMask(1, 1, 0, 0, 0); ++OutputIndex; // Anisotropy
 		Outputs[OutputIndex].SetMask(1, 1, 1, 1, 0); ++OutputIndex; // EmissiveColor
@@ -5791,6 +5790,7 @@ void UMaterialExpressionBreakMaterialAttributes::Serialize(FStructuredArchive::F
 		Outputs[OutputIndex].SetMask(1, 1, 0, 0, 0); ++OutputIndex; // OpacityMask
 		Outputs[OutputIndex].SetMask(1, 1, 1, 1, 0); ++OutputIndex; // Normal
 		Outputs[OutputIndex].SetMask(1, 1, 1, 1, 0); ++OutputIndex; // Tangent
+		Outputs[OutputIndex].SetMask(1, 1, 0, 0, 0); ++OutputIndex; // ShadingShape
 		Outputs[OutputIndex].SetMask(1, 1, 1, 1, 0); ++OutputIndex; // WorldPositionOffset
 		Outputs[OutputIndex].SetMask(1, 1, 1, 1, 0); ++OutputIndex; // WorldDisplacement
 		Outputs[OutputIndex].SetMask(1, 1, 0, 0, 0); ++OutputIndex; // TessellationMultiplier
@@ -5819,18 +5819,18 @@ static void BuildPropertyToIOIndexMap()
 	if (PropertyToIOIndexMap.Num() == 0)
 	{
 		PropertyToIOIndexMap.Add(MP_BaseColor,				0);
-		PropertyToIOIndexMap.Add(MP_ObjectNormal,			1);
-		PropertyToIOIndexMap.Add(MP_Roughness,				2);
-		PropertyToIOIndexMap.Add(MP_Anisotropy,				3);
-		PropertyToIOIndexMap.Add(MP_EmissiveColor,			4);
-		PropertyToIOIndexMap.Add(MP_Opacity,				5);
-		PropertyToIOIndexMap.Add(MP_OpacityMask,			6);
-		PropertyToIOIndexMap.Add(MP_Normal,					7);
-		PropertyToIOIndexMap.Add(MP_Tangent,				8);
+		PropertyToIOIndexMap.Add(MP_Roughness,				1);
+		PropertyToIOIndexMap.Add(MP_Anisotropy,				2);
+		PropertyToIOIndexMap.Add(MP_EmissiveColor,			3);
+		PropertyToIOIndexMap.Add(MP_Opacity,				4);
+		PropertyToIOIndexMap.Add(MP_OpacityMask,			5);
+		PropertyToIOIndexMap.Add(MP_Normal,					6);
+		PropertyToIOIndexMap.Add(MP_Tangent,				7);
+		PropertyToIOIndexMap.Add(MP_ShadingShape,			8);
 		PropertyToIOIndexMap.Add(MP_WorldPositionOffset,	9);
 		PropertyToIOIndexMap.Add(MP_WorldDisplacement,		10);
 		PropertyToIOIndexMap.Add(MP_TessellationMultiplier, 11);
-		PropertyToIOIndexMap.Add(MP_SubsurfaceColor,		12);
+		PropertyToIOIndexMap.Add(MP_SubsurfaceColor,		13);
 		PropertyToIOIndexMap.Add(MP_CustomData0,			13);
 		PropertyToIOIndexMap.Add(MP_CustomData1,			14);
 		PropertyToIOIndexMap.Add(MP_AmbientOcclusion,		15);

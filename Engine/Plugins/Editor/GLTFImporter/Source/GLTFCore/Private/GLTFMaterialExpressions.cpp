@@ -144,7 +144,6 @@ namespace GLTF
 	FMaterialElement::FMaterialElement(const FString& Name)
 	    : Name(Name)
 	    , BaseColor(TEXT("BaseColor"))
-	    , ObjectNormal(TEXT("ObjectNormal"))
 	    , Roughness(TEXT("Roughness"))
 	    , EmissiveColor(TEXT("EmissiveColor"))
 	    , Opacity(TEXT("Opacity"))

@@ -134,7 +134,7 @@ struct FHairSample
 	uint	MacroGroupId;
 	float3	BaseColor;
 	float	Roughness;
-	float3	ObjectNormal;
+	float   Specular;
 	float	Backlit;
 	uint	LightChannelMask;
 	bool	bScatterSceneLighting;
@@ -214,7 +214,7 @@ FHairSample UnpackHairSample(const FPackedHairSample In)
 	const float4 BaseColorAndRoughness = UintToFloat4(In.BaseColor_Roughness);
 	Out.BaseColor			= BaseColorAndRoughness.xyz * BaseColorAndRoughness.xyz;
 	Out.Roughness			= BaseColorAndRoughness.w;
-	Out.ObjectNormal		= float3(0, 0, 1);
+	Out.Specular			= float3(0, 0, 1);
 	Out.LightChannelMask	= (In.Specular_LightChannels_Backlit >>8) & 0x7;
 	Out.Backlit				= float(0xFF & (In.Specular_LightChannels_Backlit>>16)) / 0xFF;
 	Out.bScatterSceneLighting = (In.Specular_LightChannels_Backlit & (1<<12)) > 0;

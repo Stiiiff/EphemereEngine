@@ -82,12 +82,6 @@ RAY_TRACING_ENTRY_RAYGEN(RayTracingFinalGatherRGS)
 	FGBufferData GBufferData = GetGBufferDataFromSceneTexturesLoad(PixelCoord);
 #endif
 
-	// Remap DiffuseColor when using SubsurfaceProfile (GBuffer decoding replaces with 100% albedo)
-	if (UseSubsurfaceProfile(GBufferData.ShadingModelID))
-	{
-		GBufferData.DiffuseColor = GBufferData.StoredBaseColor;
-	}
-
 	// Cull based on shading model
 	uint ShadingModelID = GBufferData.ShadingModelID;
 	if (ShadingModelID == SHADINGMODELID_UNLIT)
@@ -95,11 +89,6 @@ RAY_TRACING_ENTRY_RAYGEN(RayTracingFinalGatherRGS)
 		return;
 	}
 
-	// Remap DiffuseColor when using SubsurfaceProfile (GBuffer decoding replaces with 100% albedo)
-	if (UseSubsurfaceProfile(GBufferData.ShadingModelID))
-	{
-		GBufferData.DiffuseColor = GBufferData.StoredBaseColor;
-	}
 	float3 DiffuseColor = GBufferData.DiffuseColor;
 	if (Luminance(DiffuseColor) < DiffuseThreshold)
 	{

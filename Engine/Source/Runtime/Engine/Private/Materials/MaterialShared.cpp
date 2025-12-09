@@ -1341,6 +1341,11 @@ bool FMaterialResource::IsFullyRough() const
 	return Material->bFullyRough;
 }
 
+bool FMaterialResource::UseCustomNormal() const
+{
+	return Material->bUseCustomNormal;
+}
+
 bool FMaterialResource::UseNormalCurvatureToRoughness() const
 {
 	return Material->bNormalCurvatureToRoughness;
@@ -1510,11 +1515,6 @@ bool FMaterialResource::HasBaseColorConnected() const
 bool FMaterialResource::HasNormalConnected() const
 {
 	return HasMaterialAttributesConnected() || Material->HasNormalConnected();
-}
-
-bool FMaterialResource::HasObjectNormalConnected() const
-{
-	return HasMaterialAttributesConnected() || Material->HasObjectNormalConnected();
 }
 
 bool FMaterialResource::HasRoughnessConnected() const
@@ -4141,7 +4141,6 @@ void FMaterialAttributeDefinitionMap::InitializeAttributeMap()
 
 	// Basic attributes
 	Add(FGuid(0x69B8D336, 0x16ED4D49, 0x9AA49729, 0x2F050F7A), TEXT("BaseColor"),		MP_BaseColor,		MCT_Float3,	FVector4(0,0,0,0),	SF_Pixel);
-	Add(FGuid(0x57C3A161, 0x7F064296, 0xB00B24A5, 0xA496F34C), TEXT("ObjectNormal"),	MP_ObjectNormal,	MCT_Float3,	FVector4(0,0,0,0),	SF_Pixel);
 	Add(FGuid(0xD1DD967C, 0x4CAD47D3, 0x9E6346FB, 0x08ECF210), TEXT("Roughness"),		MP_Roughness,		MCT_Float,	FVector4(.5,0,0,0), SF_Pixel);
 	Add(FGuid(0x55E2B4FB, 0xC1C54DB2, 0x9F11875F, 0x7231EB1E), TEXT("Anisotropy"),		MP_Anisotropy,		MCT_Float,	FVector4(0,0,0,0),  SF_Pixel);
 	Add(FGuid(0xB769B54D, 0xD08D4440, 0xABC21BA6, 0xCD27D0E2), TEXT("EmissiveColor"),	MP_EmissiveColor,	MCT_Float3,	FVector4(0,0,0,0),	SF_Pixel);
@@ -4149,6 +4148,7 @@ void FMaterialAttributeDefinitionMap::InitializeAttributeMap()
 	Add(FGuid(0x679FFB17, 0x2BB5422C, 0xAD520483, 0x166E0C75), TEXT("OpacityMask"),		MP_OpacityMask,		MCT_Float,	FVector4(1,0,0,0),	SF_Pixel);
 	Add(FGuid(0x0FA2821A, 0x200F4A4A, 0xB719B789, 0xC1259C64), TEXT("Normal"),			MP_Normal,			MCT_Float3,	FVector4(0,0,1,0),	SF_Pixel);
 	Add(FGuid(0xD5F8E9CF, 0xCDC3468D, 0xB10E4465, 0x596A7BBA), TEXT("Tangent"),			MP_Tangent,			MCT_Float3,	FVector4(1,0,0,0),	SF_Pixel);
+	Add(FGuid(0x57C3A161, 0x7F064296, 0xB00B24A5, 0xA496F34C), TEXT("ShadingShape"),	MP_ShadingShape,	MCT_Float,	FVector4(0,0,0,0),  SF_Pixel);
 
 	// Advanced attributes
 	Add(FGuid(0xF905F895, 0xD5814314, 0x916D2434, 0x8C40CE9E), TEXT("WorldPositionOffset"),		MP_WorldPositionOffset,		MCT_Float3,	FVector4(0,0,0,0),	SF_Vertex);
@@ -4250,8 +4250,6 @@ FText FMaterialAttributeDefinitionMap::GetAttributeOverrideForMaterial(const FGu
 		return LOCTEXT("SpecularColor", "Specular Color");
 	case MP_BaseColor:
 		return Material->MaterialDomain == MD_Volume ? LOCTEXT("Albedo", "Albedo") : LOCTEXT("BaseColor", "Base Color");
-	case MP_ObjectNormal:
-		return LOCTEXT("ObjectNormal", "ObjectNormal");
 	case MP_Roughness:
 		return LOCTEXT("Roughness", "Roughness");
 	case MP_Anisotropy:
@@ -4261,6 +4259,8 @@ FText FMaterialAttributeDefinitionMap::GetAttributeOverrideForMaterial(const FGu
 		return FText::FromString(GetPinNameFromShadingModelField(Material->GetShadingModels(), CustomPinNames, "Normal"));
 	case MP_Tangent:
 		return LOCTEXT("Tangent", "Tangent");
+	case MP_ShadingShape:
+		return LOCTEXT("ShadingShape", "Shading Shape");
 	case MP_WorldPositionOffset:
 		return Material->IsUIMaterial() ? LOCTEXT("ScreenPosition", "Screen Position") : LOCTEXT("WorldPositionOffset", "World Position Offset");
 	case MP_WorldDisplacement:
