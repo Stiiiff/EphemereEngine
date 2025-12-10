@@ -117,6 +117,7 @@ FHLSLMaterialTranslator::FHLSLMaterialTranslator(FMaterial* InMaterial,
 
 	SharedPixelProperties[MP_Normal] = true;
 	SharedPixelProperties[MP_Tangent] = true;
+	SharedPixelProperties[MP_ShadingShape] = true;
 	SharedPixelProperties[MP_EmissiveColor] = true;
 	SharedPixelProperties[MP_Opacity] = true;
 	SharedPixelProperties[MP_OpacityMask] = true;
@@ -643,6 +644,7 @@ bool FHLSLMaterialTranslator::Translate()
 		Chunk[MP_Opacity]						= Material->CompilePropertyAndSetMaterialProperty(MP_Opacity				,this);
 		Chunk[MP_OpacityMask]					= Material->CompilePropertyAndSetMaterialProperty(MP_OpacityMask			,this);
 		Chunk[MP_Tangent]						= Material->CompilePropertyAndSetMaterialProperty(MP_Tangent				,this);
+		Chunk[MP_ShadingShape]					= Material->CompilePropertyAndSetMaterialProperty(MP_ShadingShape			,this);
 		Chunk[MP_WorldPositionOffset]			= Material->CompilePropertyAndSetMaterialProperty(MP_WorldPositionOffset	,this);
 		Chunk[MP_WorldDisplacement]				= Material->CompilePropertyAndSetMaterialProperty(MP_WorldDisplacement		,this);
 		Chunk[MP_TessellationMultiplier]		= Material->CompilePropertyAndSetMaterialProperty(MP_TessellationMultiplier	,this);			

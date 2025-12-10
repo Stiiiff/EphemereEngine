@@ -926,6 +926,7 @@ UMaterial::UMaterial(const FObjectInitializer& ObjectInitializer)
 	
 	Opacity.Constant = 1.0f;
 	OpacityMask.Constant = 1.0f;
+	ShadingShape.Constant = 1.0f;
 #endif
 	OpacityMaskClipValue = 0.3333f;
 	bCastDynamicShadowAsMasked = false;
@@ -3444,6 +3445,7 @@ void UMaterial::PostLoad()
 	DoMaterialAttributeReorder(&Anisotropy, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&Normal, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&Tangent, UE4Ver, RenderObjVer);
+	DoMaterialAttributeReorder(&ShadingShape, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&EmissiveColor, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&Opacity, UE4Ver, RenderObjVer);
 	DoMaterialAttributeReorder(&OpacityMask, UE4Ver, RenderObjVer);
@@ -4885,6 +4887,7 @@ FExpressionInput* UMaterial::GetExpressionInputForProperty(EMaterialProperty InP
 		case MP_Anisotropy:				return &Anisotropy;
 		case MP_Normal:					return &Normal;
 		case MP_Tangent:				return &Tangent;
+		case MP_ShadingShape:			return &ShadingShape;
 		case MP_WorldPositionOffset:	return &WorldPositionOffset;
 		case MP_WorldDisplacement:		return &WorldDisplacement;
 		case MP_TessellationMultiplier:	return &TessellationMultiplier;
@@ -5396,6 +5399,7 @@ int32 UMaterial::CompilePropertyEx( FMaterialCompiler* Compiler, const FGuid& At
 		case MP_SubsurfaceColor:		return SubsurfaceColor.CompileWithDefault(Compiler, Property);
 		case MP_Normal:					return Normal.CompileWithDefault(Compiler, Property);
 		case MP_Tangent:				return Tangent.CompileWithDefault(Compiler, Property);
+		case MP_ShadingShape:			return	ShadingShape.CompileWithDefault(Compiler, Property);
 		case MP_WorldPositionOffset:	return WorldPositionOffset.CompileWithDefault(Compiler, Property);
 		case MP_WorldDisplacement:		return WorldDisplacement.CompileWithDefault(Compiler, Property);
 		case MP_PixelDepthOffset:		return PixelDepthOffset.CompileWithDefault(Compiler, Property);
@@ -5641,6 +5645,7 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 	bool bBlendableOutputAlpha,
 	bool bHasTessellation,
 	bool bHasRefraction,
+	bool bUseCustomNormal,
 	bool bUsesShadingModelFromMaterialExpression)
 {
 	if (Domain == MD_PostProcess)
@@ -5814,6 +5819,7 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 		Active = BlendMode == BLEND_Masked;
 		break;
 	case MP_BaseColor:
+	case MP_ShadingShape:
 	case MP_AmbientOcclusion:
 		Active = ShadingModels.IsLit();
 		break;
@@ -5824,7 +5830,7 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 		Active = ShadingModels.HasAnyShadingModel({ MSM_Metal, MSM_Hair }) && (!bIsTranslucentBlendMode || !bIsVolumetricTranslucencyLightingMode);
 		break;
 	case MP_Normal:
-		Active = (ShadingModels.IsLit() && (!bIsTranslucentBlendMode || !bIsNonDirectionalTranslucencyLightingMode)) || bHasRefraction;
+		Active = (ShadingModels.IsLit() && bUseCustomNormal && (!bIsTranslucentBlendMode || !bIsVolumetricTranslucencyLightingMode)) || bHasRefraction;
 		break;
 	case MP_Tangent:
 		Active = ShadingModels.HasAnyShadingModel({  MSM_Metal, MSM_Hair }) && (!bIsTranslucentBlendMode || !bIsVolumetricTranslucencyLightingMode);
@@ -5885,6 +5891,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 		D3D11TessellationMode != MTM_NoTessellation,
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 		Refraction.IsConnected(),
+		bUseCustomNormal,
 		IsShadingModelFromMaterialExpression());
 }
 #endif // WITH_EDITOR
@@ -5902,6 +5909,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 		D3D11TessellationMode != MTM_NoTessellation,
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 		Refraction.IsConnected(),
+		bUseCustomNormal,
 		DerivedMaterial->IsShadingModelFromMaterialExpression());
 }
 

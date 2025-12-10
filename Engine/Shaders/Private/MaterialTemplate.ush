@@ -16,6 +16,7 @@
 #include "/Engine/Private/PhysicsFieldSampler.ush"
 #include "/Engine/Private/SceneData.ush"
 #include "/Engine/Private/HairShadingCommon.ush"
+#include "/Engine/Private/ShadingCommon.ush"
 #include "/Engine/Private/HairStrands/HairCardsAttributeCommon.ush"
 #include "/Engine/Private/HairStrands/HairStrandsAttributeCommon.ush"
 
@@ -37,22 +38,23 @@
 #define PPI_Opacity 8
 #define PPI_Roughness 9
 #define PPI_MaterialAO 10
-#define PPI_CustomDepth 11
-#define PPI_PostProcessInput0 12
-#define PPI_PostProcessInput1 13
-#define PPI_PostProcessInput2 14
-#define PPI_PostProcessInput3 15
-#define PPI_PostProcessInput4 16
-#define PPI_PostProcessInput5 17 // (UNUSED)
-#define PPI_PostProcessInput6 18 // (UNUSED)
-#define PPI_DecalMask 19
-#define PPI_ShadingModelColor 20
-#define PPI_ShadingModelID 21
-#define PPI_AmbientOcclusion 22
-#define PPI_CustomStencil 23
-#define PPI_Velocity 24
-#define PPI_WorldTangent 25
-#define PPI_Anisotropy 26
+#define PPI_ShadingShape 11
+#define PPI_CustomDepth 12
+#define PPI_PostProcessInput0 13
+#define PPI_PostProcessInput1 14
+#define PPI_PostProcessInput2 15
+#define PPI_PostProcessInput3 16
+#define PPI_PostProcessInput4 17
+#define PPI_PostProcessInput5 18 // (UNUSED)
+#define PPI_PostProcessInput6 19 // (UNUSED)
+#define PPI_DecalMask 20
+#define PPI_ShadingModelColor 21
+#define PPI_ShadingModelID 22
+#define PPI_AmbientOcclusion 23
+#define PPI_CustomStencil 24
+#define PPI_Velocity 25
+#define PPI_WorldTangent 26
+#define PPI_Anisotropy 27
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -1833,6 +1835,9 @@ float4 SceneTextureLookup(float2 UV, int SceneTextureIndex, bool bFiltered)
 			return ScreenSpaceData.GBuffer.Roughness;
 		case PPI_MaterialAO:
 			return ScreenSpaceData.GBuffer.GBufferAO;
+		case PPI_ShadingShape:
+			return float4(GetShadingShapeColor(ScreenSpaceData.GBuffer.ShadingShape), 1);
+
 		case PPI_CustomDepth:
 			return ScreenSpaceData.GBuffer.CustomDepth;
 #if POST_PROCESS_MATERIAL
@@ -1904,13 +1909,14 @@ float3 DecodeSceneColorForMaterialNode(float2 ScreenUV)
 // in World Space
 half3 GetMaterialNormalRaw(FMaterialPixelParameters MaterialParameter, FPixelMaterialInputs PixelMaterialInputs)
 {	
-#if MATERIAL_USE_CUSTOM_NORMAL
+	float3 WorldNormal = MaterialParameter.TangentToWorld[2];
+	
 	MaterialFloat3 ObjectNormal = (PixelMaterialInputs.Normal - 0.5) * 2;
 	float3 ObjectNormalToWorld = TransformLocalVectorToWorld(MaterialParameter, ObjectNormal);
 	
+#if MATERIAL_USE_CUSTOM_NORMAL
 	return ObjectNormalToWorld;
 #else
-	float3 WorldNormal = MaterialParameter.TangentToWorld[2];
 	return WorldNormal;
 #endif
 }
@@ -1942,6 +1948,11 @@ half3 GetMaterialTangentRaw(FPixelMaterialInputs PixelMaterialInputs)
 half3 GetMaterialTangent(FPixelMaterialInputs PixelMaterialInputs)
 {
 	return GetMaterialTangentRaw(PixelMaterialInputs);
+}
+
+uint GetMaterialShadingShape(FPixelMaterialInputs PixelMaterialInputs)
+{
+	return clamp(PixelMaterialInputs.ShadingShape, 0.0f, CURVE_ATLAS_MAXID);
 }
 
 half3 GetMaterialEmissiveRaw(FPixelMaterialInputs PixelMaterialInputs)

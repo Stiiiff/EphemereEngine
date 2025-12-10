@@ -199,6 +199,10 @@ enc_temp_folder/
 /Engine/Plugins/**/Content
 /Engine/Content/*
 
+# add exceptions for DarkbloomGeneric Content
+!/Engine/Plugins/DarkbloomGeneric/Content
+!/Engine/Plugins/DarkbloomGeneric/Content/**
+
 # Ignore DDC
 /Engine/DerivedDataCache/**
 

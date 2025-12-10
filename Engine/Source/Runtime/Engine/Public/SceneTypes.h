@@ -161,6 +161,7 @@ enum EMaterialProperty
 	MP_Anisotropy UMETA(DisplayName = "Anisotropy"),
 	MP_Normal UMETA(DisplayName = "Normal"),
 	MP_Tangent UMETA(DisplayName = "Tangent"),
+	MP_ShadingShape UMETA(DisplayName = "Shading Shape"),
 	MP_WorldPositionOffset UMETA(Hidden),
 	MP_WorldDisplacement UMETA(Hidden),
 	MP_TessellationMultiplier UMETA(Hidden),

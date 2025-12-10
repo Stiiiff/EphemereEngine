@@ -88,6 +88,10 @@ half4 GetExponentialHeightFog(float3 WorldPositionRelativeToCamera, float Exclud
 	float RayOriginTermsSecond = FogStruct.ExponentialFogParameters2.x;
 	float RayLength = CameraToReceiverLength;
 	float RayDirectionZ = CameraToReceiver.z;
+	
+	const float UniformPhaseFunction = 1.0f / (4.0f * PI);
+	half3 DirectionalInscatteringColor;
+	half3 DirectionalLightInscattering;
 
 	// Factor in StartDistance
 	ExcludeDistance = max(ExcludeDistance, FogStruct.ExponentialFogParameters.w);
@@ -146,9 +150,6 @@ half4 GetExponentialHeightFog(float3 WorldPositionRelativeToCamera, float Exclud
 	)
 	{
 #if PROJECT_SUPPORT_SKY_ATMOSPHERE_AFFECTS_HEIGHFOG
-		const float UniformPhaseFunction = 1.0f / (4.0f * PI);
-		half3 DirectionalInscatteringColor;
-		half3 DirectionalLightInscattering;
 
 		// No need to test View.AtmosphereLightColorGlobalPostTransmittance[0].a because InscatteringLightDirection.w above is doing the same test already.
 		DirectionalInscatteringColor = FogStruct.DirectionalInscatteringColor.xyz + View.SkyAtmosphereHeightFogContribution * View.AtmosphereLightColorGlobalPostTransmittance[0].rgb;

@@ -21,6 +21,7 @@
 #include "ScenePrivate.h"
 #include "PostProcess/SceneFilterRendering.h"
 #include "PostProcess/RenderingCompositionGraph.h"
+#include "PostProcess/RenderingCompositionGraph.h"
 #include "PostProcess/PostProcessEyeAdaptation.h"
 #include "PostProcess/PostProcessSubsurface.h"
 #include "PostProcess/TemporalAA.h"
@@ -62,6 +63,9 @@
 #include "Rendering/StaticLightingSystemInterface.h"
 #endif
 #include "FXSystem.h"
+
+#include "Subsystems/EphemereSettingsSubsystem.h"
+#include "Curves/CurveLinearColorAtlas.h"
 
 /*-----------------------------------------------------------------------------
 	Globals
@@ -1101,6 +1105,15 @@ void FViewInfo::SetupUniformBufferParameters(
 		InViewMatrices,
 		InPrevViewMatrices
 	);
+
+	// Update shading texture reference and its value
+	if (UEphemereSettingsSubsystem* EphemereSettingsSubsystem = GEngine->GetEngineSubsystem<UEphemereSettingsSubsystem>())
+	{
+		if (UCurveLinearColorAtlas* ShadingAtlas = EphemereSettingsSubsystem->GetShadingCurveAtlas())
+		{
+			ViewUniformShaderParameters.ShadingAtlas = ShadingAtlas->TextureReference.TextureReferenceRHI;
+		}
+	}
 
 	const bool bCheckerboardSubsurfaceRendering = IsSubsurfaceCheckerboardFormat(SceneContext.GetSceneColorFormat());
 	ViewUniformShaderParameters.bCheckerboardSubsurfaceProfileRendering = bCheckerboardSubsurfaceRendering ? 1.0f : 0.0f;
